@@ -48,6 +48,17 @@ ENVIRONMENT="uat"
 
 The `BACKEND_URL` is the URL of the backend API and the `ENVIRONMENT` is the environment of the application.
 
+## Deployment
+
+First you need to generate an app bundle, for that you just need to create a **pre-release** on the repository. It will trigger a github action that generate the release app bundle. It also generate the release apk to test.
+
+> Warning !
+> Make sure to do a **pre-release** before the validation of the app bundle by Google
+
+Next, you need to send the app bundle to the Google Play Console, for that follow the Bookstack documentation : _Mobilité/Android/Comment uploader une release sur Google Play Console_
+
+In order to force XPEHO users to have the latest version of the app, we add to the app a check of the Github repository release latest version. So when a release is done and validated by Google, we need to switch the pre-release to a release on the repository to trigger the force update popup in XpeApp.
+
 ## Xpeho UI
 
 This application use the android part of the ui library of XPEHO imported from its [own repository](https://github.com/XPEHO/xpeho_ui_android).
@@ -77,7 +88,3 @@ The XPEHO SonarQube perform analysis each time changes are made to this director
 [XPEHO SonarQube](https://sonar.infra.xpeho.com)
 
 The configuration of the sonar analysis for this directory is defined in the [gradle file](./app/build.gradle).
-
-## Deployment
-
-Follow the Bookstack documentation : _Mobilité/Android/Comment uploader une release sur Google Play Console_
