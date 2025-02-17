@@ -1,6 +1,9 @@
 package com.xpeho.xpeapp
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +27,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
+import java.io.IOException
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 
 class MainActivity : ComponentActivity() {
@@ -46,6 +53,9 @@ class MainActivity : ComponentActivity() {
 
         // Check if the app has the necessary notifications permissions.
         checkPermissions()
+
+        // Check for app update
+        checkForUpdate()
 
         // This is done to skip to the Home screen faster,
         // thus not forcing the user to wait for authentication.
@@ -103,5 +113,77 @@ class MainActivity : ComponentActivity() {
     private fun scheduleNotificationAlarm() {
         val alarmScheduler = AlarmScheduler()
         alarmScheduler.scheduleAlarm(this)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun checkForUpdate() {
+        // Check for updates only in release mode
+        if (!BuildConfig.DEBUG) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val latestVersion = getLatestReleaseTag()
+                val currentVersion = getCurrentAppVersion()
+
+                // If the latest version is not null and is greater than the current version,
+                if (latestVersion != null && isVersionLessThan(currentVersion, latestVersion)) {
+                    withContext(Dispatchers.Main) {
+                        showUpdateDialog(latestVersion)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showUpdateDialog(version: String) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.force_update_popup_title_label))
+            .setMessage(
+                getString(
+                    R.string.force_update_popup_message_label,
+                    version
+                )
+            )
+            .setCancelable(false)
+            .setPositiveButton(getString(R.string.force_update_popup_button_label)) { _, _ ->
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse("market://details?id=$packageName")
+                    setPackage("com.android.vending")
+                }
+                startActivity(intent)
+            }
+            .show()
+    }
+
+    private fun getCurrentAppVersion(): String {
+        return BuildConfig.VERSION_NAME
+    }
+
+    private suspend fun getLatestReleaseTag(): String? {
+        return withContext(Dispatchers.IO) {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("https://api.github.com/repos/XPEHO/xpeapp_android/releases/latest")
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                val jsonResponse = JSONObject(response.body?.string() ?: "")
+                jsonResponse.getString("tag_name")
+            }
+        }
+    }
+
+    private fun isVersionLessThan(currentVersion: String, latestVersion: String): Boolean {
+        val currentParts = currentVersion.split(".")
+        val latestParts = latestVersion.split(".")
+
+        for (i in 0 until maxOf(currentParts.size, latestParts.size)) {
+            val currentPart = currentParts.getOrNull(i)?.toIntOrNull() ?: 0
+            val latestPart = latestParts.getOrNull(i)?.toIntOrNull() ?: 0
+
+            if (currentPart < latestPart) return true
+            if (currentPart > latestPart) return false
+        }
+        return false
     }
 }

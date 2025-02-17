@@ -64,5 +64,8 @@
     <string name="about_view_version_label">Version: </string>
     <string name="about_view_confidentiality_label">Politiques de confidentialité</string>
     <string name="about_view_propriety_label">Propriétaire:</string>
+    <string name="force_update_popup_title_label">Mise à jour requise</string>
+    <string name="force_update_popup_message_label">La version %s est disponible !\nVeuillez mettre à jour l’application pour continuer.</string>
+    <string name="force_update_popup_button_label">Mettre à jour</string>
 
 </resources>
