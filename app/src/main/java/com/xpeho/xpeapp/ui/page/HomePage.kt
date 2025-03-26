@@ -18,8 +18,10 @@ import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
+import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
 import com.xpeho.xpeapp.domain.FeatureFlippingState
 import com.xpeho.xpeapp.ui.components.CustomDialog
+import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
 import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.components.newsletter.NewsletterPreview
@@ -27,6 +29,8 @@ import com.xpeho.xpeapp.ui.components.qvst.QvstCardList
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
 import com.xpeho.xpeapp.ui.uiState.QvstActiveUiState
 import com.xpeho.xpeapp.ui.viewModel.FeatureFlippingViewModel
+import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModel
+import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModelState
 import com.xpeho.xpeapp.ui.viewModel.newsletter.NewsletterViewModel
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstActiveCampaignsViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
@@ -59,10 +63,17 @@ fun HomePage(navigationController: NavController) {
         }
     )
 
+    val agendaViewModel = viewModel<AgendaViewModel>(
+        factory = viewModelFactory {
+            AgendaViewModel()
+        }
+    )
+
     sendAnalyticsEvent("home_page")
 
     LaunchedEffect(Unit) {
         campaignActiveViewModel.updateState()
+        agendaViewModel.updateState()
         newsletterViewModel.updateState()
         ffViewModel.updateState()
     }
@@ -120,6 +131,13 @@ fun HomePage(navigationController: NavController) {
                             item {
                                 Title(label = "À ne pas manquer !")
 
+                                val events: List<AgendaEvent> =
+                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEvent
+                                AgendaCardList(
+                                    events = events,
+                                    collapsable = false
+                                )
+
                                 val campaigns: List<QvstCampaignEntity> =
                                     (campaignActiveViewModel.state as QvstActiveUiState.SUCCESS).qvst
                                 QvstCardList(
@@ -153,5 +171,3 @@ fun HomePage(navigationController: NavController) {
         }
     }
 }
-
-

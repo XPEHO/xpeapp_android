@@ -9,6 +9,7 @@ import com.xpeho.xpeapp.data.entity.user.UserEditPassword
 import com.xpeho.xpeapp.data.model.AuthResult
 import com.xpeho.xpeapp.data.model.user.UserInfos
 import com.xpeho.xpeapp.data.model.WordpressToken
+import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
 import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
 import com.xpeho.xpeapp.data.model.qvst.QvstQuestion
@@ -274,6 +275,22 @@ class WordpressRepository(
             catchBody = { e ->
                 Log.e("WordpressRepository: openAnswers", "Network error: ${e.message}")
                 return false
+            }
+        )
+    }
+
+    // Agenda features methods
+
+    // getAllEvents
+
+    suspend fun getAllAgendaEvents(): List<AgendaEvent>? {
+        handleServiceExceptions(
+            tryBody = {
+                return api.fetchEvents()
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: getAllAgendaEvents", "Network error: ${e.message}")
+                return null
             }
         )
     }

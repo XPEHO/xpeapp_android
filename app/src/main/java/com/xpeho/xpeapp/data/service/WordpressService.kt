@@ -5,6 +5,7 @@ import com.xpeho.xpeapp.data.entity.QvstAnswerBody
 import com.xpeho.xpeapp.data.entity.user.UserEditPassword
 import com.xpeho.xpeapp.data.model.user.UserInfos
 import com.xpeho.xpeapp.data.model.WordpressToken
+import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
 import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
 import com.xpeho.xpeapp.data.model.qvst.QvstQuestion
@@ -82,5 +83,13 @@ interface WordpressService {
     suspend fun submitOpenAnswer(
         @Query("text") text: String,
     ): Response<Unit>
+
+    // Agenda Feature
+
+    // Fetch all the events
+    @Headers("Content-Type: application/json")
+    @GET ("xpeho/v1/agenda/events")
+    suspend fun fetchEvents(): List<AgendaEvent>
+
 }
 

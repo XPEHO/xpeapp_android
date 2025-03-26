@@ -10,5 +10,6 @@ enum class FeatureFlippingEnum(val value: String) {
     EXPENSE_REPORT("expenseReport"),
     COLLEAGUES("colleagues"),
     QVST("campaign"),
-    PROFILE("profile")
+    PROFILE("profile"),
+    AGENDA("agenda"),
 }
