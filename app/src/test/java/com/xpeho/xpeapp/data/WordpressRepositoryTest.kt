@@ -655,16 +655,16 @@ class WordpressRepositoryTest {
                 AgendaEvent("eventId", "eventName", "eventDescription",
                     "eventDate", "eventType", typeId = "1", location = "location", topic= "topic")
             )
-            coEvery { wordpressService.fetchEvents() } returns events
+            coEvery { wordpressService.fetchEvents(any()) } returns events
 
-            val result = wordpressRepo.getAllEvents("page")
+            val result = wordpressRepo.getAllEvents("week")
 
             assertEquals(events, result)
         }
 
         @Test
         fun `getAllEvents with network error returns null`() = runBlocking {
-            coEvery { wordpressService.fetchEvents() } throws UnknownHostException()
+            coEvery { wordpressService.fetchEvents(any()) } throws UnknownHostException()
 
             val result = wordpressRepo.getAllEvents("page")
 
