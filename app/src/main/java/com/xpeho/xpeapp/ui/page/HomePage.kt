@@ -18,7 +18,9 @@ import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
+import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
 import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
+import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.domain.FeatureFlippingState
 import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
@@ -73,7 +75,7 @@ fun HomePage(navigationController: NavController) {
 
     LaunchedEffect(Unit) {
         campaignActiveViewModel.updateState()
-        agendaViewModel.updateState()
+        agendaViewModel.updateStateForWeek()
         newsletterViewModel.updateState()
         ffViewModel.updateState()
     }
@@ -130,14 +132,6 @@ fun HomePage(navigationController: NavController) {
                         is QvstActiveUiState.SUCCESS -> {
                             item {
                                 Title(label = "À ne pas manquer !")
-
-                                val events: List<AgendaEvent> =
-                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEvent
-                                AgendaCardList(
-                                    events = events,
-                                    collapsable = false
-                                )
-
                                 val campaigns: List<QvstCampaignEntity> =
                                     (campaignActiveViewModel.state as QvstActiveUiState.SUCCESS).qvst
                                 QvstCardList(
@@ -162,8 +156,46 @@ fun HomePage(navigationController: NavController) {
                     }
                 }
 
+                if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.AGENDA)) {
+                    // When we have loaded the agenda events
+                    when (agendaViewModel.state) {
+
+                        // If we successfully loaded the events
+                        is AgendaViewModelState.SUCCESS -> {
+                            item {
+                                val events: List<AgendaEvent> =
+                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEvent
+                                val eventsTypes: List<AgendaEventType> =
+                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEventType
+                                val birthdays: List<AgendaBirthday> =
+                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaBirthday
+                                AgendaCardList(
+                                    events = events,
+                                    eventsTypes = eventsTypes,
+                                    birthdays = birthdays,
+                                    collapsable = false
+                                )
+                            }
+                        }
+
+                        // If there was an error loading the events
+                        is AgendaViewModelState.ERROR -> {
+                            item {
+                                CustomDialog(
+                                    title = stringResource(id = R.string.login_page_error_title),
+                                    message = (agendaViewModel.state as AgendaViewModelState.ERROR).error,
+                                ) {
+                                    agendaViewModel.resetState()
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (!ffViewModel.isFeatureEnabled(FeatureFlippingEnum.NEWSLETTERS)
-                    && !ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST)
+                    && !ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST) && !ffViewModel.isFeatureEnabled(
+                        FeatureFlippingEnum.AGENDA
+                    )
                 ) {
                     item { NoContentPlaceHolder() }
                 }

@@ -5,7 +5,9 @@ import com.xpeho.xpeapp.data.entity.QvstAnswerBody
 import com.xpeho.xpeapp.data.entity.user.UserEditPassword
 import com.xpeho.xpeapp.data.model.user.UserInfos
 import com.xpeho.xpeapp.data.model.WordpressToken
+import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
 import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
+import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
 import com.xpeho.xpeapp.data.model.qvst.QvstQuestion
@@ -89,7 +91,21 @@ interface WordpressService {
     // Fetch all the events
     @Headers("Content-Type: application/json")
     @GET ("xpeho/v1/agenda/events")
-    suspend fun fetchEvents(): List<AgendaEvent>
+    suspend fun fetchEvents(
+        @Query("page") page: String = "",
+        ): List<AgendaEvent>
+
+    // Fetch all the event types
+    @Headers("Content-Type: application/json")
+    @GET ("xpeho/v1/agenda/events-types")
+    suspend fun fetchEventTypes(): List<AgendaEventType>
+
+    // Fetch all birthdays
+    @Headers("Content-Type: application/json")
+    @GET ("xpeho/v1/agenda/birthday")
+    suspend fun fetchBirthdays(
+        @Query("page") page: String = "",
+        ): List<AgendaBirthday>
 
 }
 
