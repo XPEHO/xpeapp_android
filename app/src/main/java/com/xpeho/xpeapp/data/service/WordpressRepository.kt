@@ -289,7 +289,7 @@ class WordpressRepository(
     suspend fun getAllEvents(page: String): List<AgendaEvent>? {
         handleServiceExceptions(
             tryBody = {
-                return api.fetchEvents()
+                return api.fetchEvents(page)
             },
             catchBody = { e ->
                 Log.e("WordpressRepository: getAllEvents", "Network error: ${e.message}")

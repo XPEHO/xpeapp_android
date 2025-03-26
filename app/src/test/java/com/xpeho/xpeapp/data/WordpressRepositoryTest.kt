@@ -652,7 +652,8 @@ class WordpressRepositoryTest {
         @Test
         fun `getAllEvents with valid response returns events`() = runBlocking {
             val events = listOf(
-                AgendaEvent("eventId", "eventName", "eventDescription", "eventDate", "eventType", typeId = "1", location = "location", topic= "topic")
+                AgendaEvent("eventId", "eventName", "eventDescription",
+                    "eventDate", "eventType", typeId = "1", location = "location", topic= "topic")
             )
             coEvery { wordpressService.fetchEvents() } returns events
 

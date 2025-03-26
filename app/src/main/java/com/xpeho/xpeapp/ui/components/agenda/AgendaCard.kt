@@ -56,7 +56,8 @@ private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, co
 
     return {
         if (event.date.isNotEmpty()) {
-            val formattedDate = LocalDateTime.parse(event.date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(formatter)
+            val formattedDate = LocalDateTime.parse(event.date,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(formatter)
             TagPill(
                 label = formattedDate,
                 backgroundColor = color,
@@ -112,8 +113,11 @@ private fun getEventTypeColor(event: AgendaEvent, eventTypes: List<AgendaEventTy
     }
 }
 
+private const val BASE_COLOR_HEX = 0xFF7C4000
+private const val ALPHA_VALUE = 0.2f
+
 private fun getTagColor(baseColor: Color): Color {
-    val overlayColor = Color(0xFF7C4000).copy(alpha = 0.2f)
+    val overlayColor = Color(BASE_COLOR_HEX).copy(alpha = ALPHA_VALUE)
     return overlayColor.compositeOver(baseColor)
 }
 
