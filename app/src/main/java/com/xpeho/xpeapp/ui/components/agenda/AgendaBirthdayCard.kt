@@ -43,7 +43,7 @@ fun AgendaBirthdayCard(
 
 @Composable
 private fun getBirthdayTagsList(birthday: AgendaBirthday, color: Color): @Composable () -> Unit {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH)
+    val dateFormat = SimpleDateFormat("dd/MM", Locale.FRENCH)
 
     return {
         TagPill(

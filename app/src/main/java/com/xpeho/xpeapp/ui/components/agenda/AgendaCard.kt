@@ -49,7 +49,7 @@ fun AgendaCard(
 
 @Composable
 private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, color: Color): @Composable () -> Unit {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH)
+    val dateFormat = SimpleDateFormat("dd/MM", Locale.FRENCH)
     return {
         TagPill(
             label = dateFormat.format(event.date),

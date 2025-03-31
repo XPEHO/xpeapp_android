@@ -23,7 +23,9 @@ import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
 import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.domain.FeatureFlippingState
 import com.xpeho.xpeapp.ui.components.CustomDialog
+import com.xpeho.xpeapp.ui.components.agenda.AgendaBirthdayItem
 import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
+import com.xpeho.xpeapp.ui.components.agenda.AgendaEventItem
 import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.components.newsletter.NewsletterPreview
@@ -163,16 +165,14 @@ fun HomePage(navigationController: NavController) {
                         // If we successfully loaded the events
                         is AgendaViewModelState.SUCCESS -> {
                             item {
-                                val events: List<AgendaEvent> =
-                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEvent
-                                val eventsTypes: List<AgendaEventType> =
-                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEventType
-                                val birthdays: List<AgendaBirthday> =
-                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaBirthday
+                                val state = agendaViewModel.state as AgendaViewModelState.SUCCESS
+                                val events = state.agendaEvent.map { AgendaEventItem(it) }
+                                val birthdays = state.agendaBirthday.map { AgendaBirthdayItem(it) }
+                                val items = (events + birthdays).sortedBy { it.date }
+                                val eventsTypes = state.agendaEventType
                                 AgendaCardList(
-                                    events = events,
+                                    items = items,
                                     eventsTypes = eventsTypes,
-                                    birthdays = birthdays,
                                     collapsable = false
                                 )
                             }
