@@ -1,12 +1,14 @@
 package com.xpeho.xpeapp.data.model.agenda
 
 import com.google.gson.annotations.SerializedName
+import java.time.LocalTime
+import java.util.Date
 
 data class AgendaEvent(
-    val id: String?,
-    val date: String,
-    @SerializedName("start_time") val startTime: String?,
-    @SerializedName("end_time") val endTime: String?,
+    val id: Int,
+    val date: Date,
+    @SerializedName("start_time") val startTime: LocalTime?,
+    @SerializedName("end_time") val endTime: LocalTime?,
     val title: String,
     val location: String?,
     @SerializedName("type_id") val typeId: String,

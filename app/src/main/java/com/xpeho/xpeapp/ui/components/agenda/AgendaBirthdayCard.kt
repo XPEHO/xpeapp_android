@@ -5,22 +5,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
-import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeho_ui_android.CollapsableCard
 import com.xpeho.xpeho_ui_android.TagPill
-import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 import com.xpeho.xpeapp.R
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import androidx.core.graphics.toColorInt
 import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
-import java.time.LocalDate
-import java.time.LocalTime
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun AgendaBirthdayCard(
@@ -50,16 +43,13 @@ fun AgendaBirthdayCard(
 
 @Composable
 private fun getBirthdayTagsList(birthday: AgendaBirthday, color: Color): @Composable () -> Unit {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH)
 
     return {
-        birthday.birthdate?.takeIf { it.isNotEmpty() }?.let {
-            val formattedDate = LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(formatter)
-            TagPill(
-                label = formattedDate,
-                backgroundColor = color,
-                size = 9.sp
-            )
-        }
+        TagPill(
+            label = dateFormat.format(birthday.birthdate),
+            backgroundColor = color,
+            size = 9.sp
+        )
     }
 }

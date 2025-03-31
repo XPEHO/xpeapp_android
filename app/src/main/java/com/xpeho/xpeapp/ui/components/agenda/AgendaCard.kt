@@ -15,10 +15,9 @@ import com.xpeho.xpeho_ui_android.CollapsableCard
 import com.xpeho.xpeho_ui_android.TagPill
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 import com.xpeho.xpeapp.R
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import androidx.core.graphics.toColorInt
-import java.time.LocalTime
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun AgendaCard(
@@ -50,42 +49,33 @@ fun AgendaCard(
 
 @Composable
 private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, color: Color): @Composable () -> Unit {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val timeFormatter = DateTimeFormatter.ofPattern("HH-mm")
-    val timeOfData = DateTimeFormatter.ofPattern("HH:mm:ss")
-
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH)
     return {
-        if (event.date.isNotEmpty()) {
-            val formattedDate = LocalDateTime.parse(event.date,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(formatter)
+        TagPill(
+            label = dateFormat.format(event.date),
+            backgroundColor = color,
+            size = 9.sp
+        )
+        event.startTime?.let {
             TagPill(
-                label = formattedDate,
+                label = event.startTime.toString(),
                 backgroundColor = color,
                 size = 9.sp
             )
         }
-        event.startTime?.takeIf { it.isNotEmpty() }?.let {
-            val formattedTime = LocalTime.parse(it, timeOfData).format(timeFormatter)
+        event.endTime?.let {
             TagPill(
-                label = formattedTime,
+                label = event.endTime.toString(),
                 backgroundColor = color,
                 size = 9.sp
             )
         }
-        event.endTime?.takeIf { it.isNotEmpty() }?.let {
-            val formattedTime = LocalTime.parse(it, timeOfData).format(timeFormatter)
-            TagPill(
-                label = formattedTime,
-                backgroundColor = color,
-                size = 9.sp
-            )
-        }
-        eventType.firstOrNull { it.id == event.typeId }?.let {
+        eventType.firstOrNull { it.id == event.typeId.toInt() }?.let {
             TagPill(
                 label = it.label,
                 backgroundColor = color,
                 size = 9.sp
-             )
+            )
         }
         event.location?.takeIf { it.isNotEmpty() }?.let {
             TagPill(
@@ -105,7 +95,7 @@ private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, co
 }
 
 private fun getEventTypeColor(event: AgendaEvent, eventTypes: List<AgendaEventType>): Color {
-    val eventType = eventTypes.firstOrNull { it.id == event.typeId }
+    val eventType = eventTypes.firstOrNull { it.id == event.typeId.toInt() }
     return if (eventType != null) {
         Color(("#" + eventType.colorCode.trimStart('#')).toColorInt())
     } else {
@@ -122,7 +112,7 @@ private fun getTagColor(baseColor: Color): Color {
 }
 
 private fun getEventTypeIcon(event: AgendaEvent, eventType: List<AgendaEventType>): Int {
-     return when (eventType.firstOrNull { it.id == event.typeId }?.label) {
+     return when (eventType.firstOrNull { it.id == event.typeId.toInt() }?.label) {
          "XpeUp" -> R.drawable.birthday
          "Event interne" -> R.drawable.building
          "Formation" -> R.drawable.study
