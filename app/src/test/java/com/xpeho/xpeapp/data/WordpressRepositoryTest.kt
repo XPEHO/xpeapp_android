@@ -7,6 +7,9 @@ import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
 import com.xpeho.xpeapp.data.entity.user.UserEditPassword
 import com.xpeho.xpeapp.data.model.AuthResult
 import com.xpeho.xpeapp.data.model.WordpressToken
+import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
+import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
+import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.data.model.qvst.QvstAnswer
 import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
@@ -39,7 +42,9 @@ import retrofit2.Response
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import javax.net.ssl.SSLHandshakeException
@@ -644,6 +649,88 @@ class WordpressRepositoryTest {
         }
     }
 
+    class GetAllEventsTests : BaseTest() {
+
+        @Test
+        fun `getAllEvents with valid response returns events`() = runBlocking {
+            val events = listOf(
+                AgendaEvent(
+                    id = 1,
+                    date = SimpleDateFormat("yyyy-MM-dd").parse("2023-01-01")!!,
+                    startTime = LocalTime.parse("10:00:00"),
+                    endTime = LocalTime.parse("12:00:00"),
+                    title = "eventName",
+                    location = "location",
+                    typeId = "1",
+                    topic = "topic"
+                )
+            )
+            coEvery { wordpressService.fetchEvents(any()) } returns events
+
+            val result = wordpressRepo.getAllEvents("week")
+
+            assertEquals(events, result)
+        }
+
+        @Test
+        fun `getAllEvents with network error returns null`() = runBlocking {
+            coEvery { wordpressService.fetchEvents(any()) } throws UnknownHostException()
+
+            val result = wordpressRepo.getAllEvents("page")
+
+            assertEquals(null, result)
+        }
+    }
+
+    class GetAllEventsTypesTests : BaseTest() {
+
+        @Test
+        fun `getAllEventsTypes with valid response returns event types`() = runBlocking {
+            val eventTypes = listOf(
+                AgendaEventType(1, "typeName", colorCode = "colorCode")
+            )
+            coEvery { wordpressService.fetchEventTypes() } returns eventTypes
+
+            val result = wordpressRepo.getAllEventsTypes()
+
+            assertEquals(eventTypes, result)
+        }
+
+        @Test
+        fun `getAllEventsTypes with network error returns null`() = runBlocking {
+            coEvery { wordpressService.fetchEventTypes() } throws UnknownHostException()
+
+            val result = wordpressRepo.getAllEventsTypes()
+
+            assertEquals(null, result)
+        }
+    }
+
+    class GetAllBirthdaysTests : BaseTest() {
+
+        @Test
+        fun `getAllBirthdays with valid response returns birthdays`() = runBlocking {
+            val birthdays = listOf(
+                AgendaBirthday(1, "firstname", SimpleDateFormat("yyyy-MM-dd").
+                parse("2023-01-01")!!, email = "email.email.com")
+            )
+            coEvery { wordpressService.fetchBirthdays("page") } returns birthdays
+
+            val result = wordpressRepo.getAllBirthdays("page")
+
+            assertEquals(birthdays, result)
+        }
+
+        @Test
+        fun `getAllBirthdays with network error returns null`() = runBlocking {
+            coEvery { wordpressService.fetchBirthdays("page") } throws UnknownHostException()
+
+            val result = wordpressRepo.getAllBirthdays("page")
+
+            assertEquals(null, result)
+        }
+    }
+
 
 
     class HandleAuthExceptionsTests : BaseTest() {
@@ -832,4 +919,6 @@ class WordpressRepositoryTest {
             assertEquals(expectedDate, result)
         }
     }
+
+
 }

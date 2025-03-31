@@ -18,8 +18,12 @@ import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
+import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
+import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
+import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.domain.FeatureFlippingState
 import com.xpeho.xpeapp.ui.components.CustomDialog
+import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
 import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.components.newsletter.NewsletterPreview
@@ -27,6 +31,8 @@ import com.xpeho.xpeapp.ui.components.qvst.QvstCardList
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
 import com.xpeho.xpeapp.ui.uiState.QvstActiveUiState
 import com.xpeho.xpeapp.ui.viewModel.FeatureFlippingViewModel
+import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModel
+import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModelState
 import com.xpeho.xpeapp.ui.viewModel.newsletter.NewsletterViewModel
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstActiveCampaignsViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
@@ -59,10 +65,17 @@ fun HomePage(navigationController: NavController) {
         }
     )
 
+    val agendaViewModel = viewModel<AgendaViewModel>(
+        factory = viewModelFactory {
+            AgendaViewModel()
+        }
+    )
+
     sendAnalyticsEvent("home_page")
 
     LaunchedEffect(Unit) {
         campaignActiveViewModel.updateState()
+        agendaViewModel.updateStateForWeek()
         newsletterViewModel.updateState()
         ffViewModel.updateState()
     }
@@ -119,7 +132,6 @@ fun HomePage(navigationController: NavController) {
                         is QvstActiveUiState.SUCCESS -> {
                             item {
                                 Title(label = "À ne pas manquer !")
-
                                 val campaigns: List<QvstCampaignEntity> =
                                     (campaignActiveViewModel.state as QvstActiveUiState.SUCCESS).qvst
                                 QvstCardList(
@@ -144,8 +156,46 @@ fun HomePage(navigationController: NavController) {
                     }
                 }
 
+                if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.AGENDA)) {
+                    // When we have loaded the agenda events
+                    when (agendaViewModel.state) {
+
+                        // If we successfully loaded the events
+                        is AgendaViewModelState.SUCCESS -> {
+                            item {
+                                val events: List<AgendaEvent> =
+                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEvent
+                                val eventsTypes: List<AgendaEventType> =
+                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaEventType
+                                val birthdays: List<AgendaBirthday> =
+                                    (agendaViewModel.state as AgendaViewModelState.SUCCESS).agendaBirthday
+                                AgendaCardList(
+                                    events = events,
+                                    eventsTypes = eventsTypes,
+                                    birthdays = birthdays,
+                                    collapsable = false
+                                )
+                            }
+                        }
+
+                        // If there was an error loading the events
+                        is AgendaViewModelState.ERROR -> {
+                            item {
+                                CustomDialog(
+                                    title = stringResource(id = R.string.login_page_error_title),
+                                    message = (agendaViewModel.state as AgendaViewModelState.ERROR).error,
+                                ) {
+                                    agendaViewModel.resetState()
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (!ffViewModel.isFeatureEnabled(FeatureFlippingEnum.NEWSLETTERS)
-                    && !ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST)
+                    && !ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST) && !ffViewModel.isFeatureEnabled(
+                        FeatureFlippingEnum.AGENDA
+                    )
                 ) {
                     item { NoContentPlaceHolder() }
                 }
@@ -153,5 +203,3 @@ fun HomePage(navigationController: NavController) {
         }
     }
 }
-
-

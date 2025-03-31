@@ -2,6 +2,7 @@ package com.xpeho.xpeapp.data.service
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import com.google.api.Page
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.entity.QvstAnswerBody
 import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
@@ -9,6 +10,9 @@ import com.xpeho.xpeapp.data.entity.user.UserEditPassword
 import com.xpeho.xpeapp.data.model.AuthResult
 import com.xpeho.xpeapp.data.model.user.UserInfos
 import com.xpeho.xpeapp.data.model.WordpressToken
+import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
+import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
+import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
 import com.xpeho.xpeapp.data.model.qvst.QvstQuestion
@@ -274,6 +278,50 @@ class WordpressRepository(
             catchBody = { e ->
                 Log.e("WordpressRepository: openAnswers", "Network error: ${e.message}")
                 return false
+            }
+        )
+    }
+
+    // Agenda features methods
+
+    // getAllEvents
+
+    suspend fun getAllEvents(page: String): List<AgendaEvent>? {
+        handleServiceExceptions(
+            tryBody = {
+                return api.fetchEvents(page)
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: getAllEvents", "Network error: ${e.message}")
+                return null
+            }
+        )
+    }
+
+    // getAllEventsTypes
+
+    suspend fun getAllEventsTypes(): List<AgendaEventType>? {
+        handleServiceExceptions(
+            tryBody = {
+                return api.fetchEventTypes()
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: getAllEventsTypes", "Network error: ${e.message}")
+                return null
+            }
+        )
+    }
+
+    // getAllBirthdays
+
+    suspend fun getAllBirthdays(page: String): List<AgendaBirthday>? {
+        handleServiceExceptions(
+            tryBody = {
+                return api.fetchBirthdays(page)
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: getAllBirthdays", "Network error: ${e.message}")
+                return null
             }
         )
     }

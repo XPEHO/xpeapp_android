@@ -3,8 +3,11 @@ package com.xpeho.xpeapp.di
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.GsonBuilder
+import com.google.type.DateTime
 import com.xpeho.xpeapp.BuildConfig
 import com.xpeho.xpeapp.data.DatastorePref
+import com.xpeho.xpeapp.data.dateConverter.DateTimeTypeAdapter
+import com.xpeho.xpeapp.data.dateConverter.DateTypeAdapter
 import com.xpeho.xpeapp.data.service.FirebaseService
 import com.xpeho.xpeapp.data.service.WordpressRepository
 import com.xpeho.xpeapp.data.service.WordpressService
@@ -15,6 +18,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalTime
+import java.util.Date
 
 interface AppModule {
     val authenticationManager: AuthenticationManager
@@ -33,7 +38,11 @@ class MainAppModule(
 
     private val baseUrl = BuildConfig.BACKEND_URL
 
-    private val gson = GsonBuilder().setLenient().create()
+    private val gson = GsonBuilder()
+        // Register custom date format for Date and DateTime
+        .registerTypeAdapter(Date::class.java, DateTypeAdapter())
+        .registerTypeAdapter(LocalTime::class.java, DateTimeTypeAdapter())
+        .setLenient().create()
 
     private val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
     private val authorization by lazy {
