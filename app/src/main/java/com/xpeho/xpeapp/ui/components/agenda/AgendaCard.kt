@@ -16,6 +16,7 @@ import com.xpeho.xpeho_ui_android.TagPill
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 import com.xpeho.xpeapp.R
 import androidx.core.graphics.toColorInt
+import com.xpeho.xpeapp.ui.components.layout.TagPillCustom
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -50,22 +51,20 @@ fun AgendaCard(
 @Composable
 private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, color: Color): @Composable () -> Unit {
     val dateFormat = SimpleDateFormat("dd/MM", Locale.FRENCH)
+    val timeInfo = listOfNotNull(
+        event.startTime?.let { "De: $it" },
+        event.endTime?.let { "à: $it" }
+    ).joinToString(separator = " ")
+
     return {
         TagPill(
             label = dateFormat.format(event.date),
             backgroundColor = color,
             size = 9.sp
         )
-        event.startTime?.let {
+        if (timeInfo.isNotEmpty()) {
             TagPill(
-                label = event.startTime.toString(),
-                backgroundColor = color,
-                size = 9.sp
-            )
-        }
-        event.endTime?.let {
-            TagPill(
-                label = event.endTime.toString(),
+                label = timeInfo,
                 backgroundColor = color,
                 size = 9.sp
             )
@@ -78,7 +77,8 @@ private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, co
             )
         }
         event.location?.takeIf { it.isNotEmpty() }?.let {
-            TagPill(
+            TagPillCustom(
+                iconResId = R.drawable.location,
                 label = it,
                 backgroundColor = color,
                 size = 9.sp
@@ -112,13 +112,13 @@ private fun getTagColor(baseColor: Color): Color {
 }
 
 private fun getEventTypeIcon(event: AgendaEvent, eventType: List<AgendaEventType>): Int {
-     return when (eventType.firstOrNull { it.id == event.typeId.toInt() }?.label) {
-         "XpeUp" -> R.drawable.birthday
-         "Event interne" -> R.drawable.building
-         "Formation" -> R.drawable.study
-         "RSE" -> R.drawable.leaf
-         "Activité" -> R.drawable.gamepad
-         "Event externe" -> R.drawable.outside
-         else -> R.drawable.building
+    return when (eventType.firstOrNull { it.id == event.typeId.toInt() }?.label) {
+        "XpeUp" -> R.drawable.birthday
+        "Event interne" -> R.drawable.building
+        "Formation" -> R.drawable.study
+        "RSE" -> R.drawable.leaf
+        "Activité" -> R.drawable.gamepad
+        "Event externe" -> R.drawable.outside
+        else -> R.drawable.building
     }
 }

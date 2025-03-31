@@ -18,9 +18,6 @@ import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
-import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
-import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
-import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.domain.FeatureFlippingState
 import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.agenda.AgendaBirthdayItem
@@ -31,10 +28,10 @@ import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.components.newsletter.NewsletterPreview
 import com.xpeho.xpeapp.ui.components.qvst.QvstCardList
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
+import com.xpeho.xpeapp.ui.uiState.AgendaUiState
 import com.xpeho.xpeapp.ui.uiState.QvstActiveUiState
 import com.xpeho.xpeapp.ui.viewModel.FeatureFlippingViewModel
 import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModel
-import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModelState
 import com.xpeho.xpeapp.ui.viewModel.newsletter.NewsletterViewModel
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstActiveCampaignsViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
@@ -163,9 +160,9 @@ fun HomePage(navigationController: NavController) {
                     when (agendaViewModel.state) {
 
                         // If we successfully loaded the events
-                        is AgendaViewModelState.SUCCESS -> {
+                        is AgendaUiState.SUCCESS -> {
                             item {
-                                val state = agendaViewModel.state as AgendaViewModelState.SUCCESS
+                                val state = agendaViewModel.state as AgendaUiState.SUCCESS
                                 val events = state.agendaEvent.map { AgendaEventItem(it) }
                                 val birthdays = state.agendaBirthday.map { AgendaBirthdayItem(it) }
                                 val items = (events + birthdays).sortedBy { it.date }
@@ -179,11 +176,11 @@ fun HomePage(navigationController: NavController) {
                         }
 
                         // If there was an error loading the events
-                        is AgendaViewModelState.ERROR -> {
+                        is AgendaUiState.ERROR -> {
                             item {
                                 CustomDialog(
                                     title = stringResource(id = R.string.login_page_error_title),
-                                    message = (agendaViewModel.state as AgendaViewModelState.ERROR).error,
+                                    message = (agendaViewModel.state as AgendaUiState.ERROR).error,
                                 ) {
                                     agendaViewModel.resetState()
                                 }

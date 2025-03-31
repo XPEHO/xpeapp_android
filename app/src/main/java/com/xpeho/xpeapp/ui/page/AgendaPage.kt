@@ -59,7 +59,7 @@ fun AgendaPage() {
                 item {
                     CustomDialog(
                         title = stringResource(id = R.string.login_page_error_title),
-                        message = (agendaViewModel.state as QvstUiState.ERROR).error,
+                        message = (agendaViewModel.state as AgendaUiState.ERROR).error,
                     ) {
                         agendaViewModel.resetState()
                     }
