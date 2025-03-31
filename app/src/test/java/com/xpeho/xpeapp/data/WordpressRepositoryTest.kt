@@ -42,7 +42,9 @@ import retrofit2.Response
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import javax.net.ssl.SSLHandshakeException
@@ -652,8 +654,16 @@ class WordpressRepositoryTest {
         @Test
         fun `getAllEvents with valid response returns events`() = runBlocking {
             val events = listOf(
-                AgendaEvent("eventId", "eventName", "eventDescription",
-                    "eventDate", "eventType", typeId = "1", location = "location", topic= "topic")
+                AgendaEvent(
+                    id = 1,
+                    date = SimpleDateFormat("yyyy-MM-dd").parse("2023-01-01")!!,
+                    startTime = LocalTime.parse("10:00:00"),
+                    endTime = LocalTime.parse("12:00:00"),
+                    title = "eventName",
+                    location = "location",
+                    typeId = "1",
+                    topic = "topic"
+                )
             )
             coEvery { wordpressService.fetchEvents(any()) } returns events
 
@@ -677,7 +687,7 @@ class WordpressRepositoryTest {
         @Test
         fun `getAllEventsTypes with valid response returns event types`() = runBlocking {
             val eventTypes = listOf(
-                AgendaEventType("typeId", "typeName", colorCode = "colorCode")
+                AgendaEventType(1, "typeName", colorCode = "colorCode")
             )
             coEvery { wordpressService.fetchEventTypes() } returns eventTypes
 
@@ -701,7 +711,8 @@ class WordpressRepositoryTest {
         @Test
         fun `getAllBirthdays with valid response returns birthdays`() = runBlocking {
             val birthdays = listOf(
-                AgendaBirthday("birthdayId", "firstname", "birthdayDate", email = "email.email.com")
+                AgendaBirthday(1, "firstname", SimpleDateFormat("yyyy-MM-dd").
+                parse("2023-01-01")!!, email = "email.email.com")
             )
             coEvery { wordpressService.fetchBirthdays("page") } returns birthdays
 
