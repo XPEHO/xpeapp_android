@@ -11,6 +11,7 @@ import com.xpeho.xpeapp.ui.components.layout.DisabledFeaturePlaceHolder
 import com.xpeho.xpeapp.ui.page.HomePage
 import com.xpeho.xpeapp.ui.page.LoginPage
 import com.xpeho.xpeapp.ui.page.NewsletterPage
+import com.xpeho.xpeapp.ui.page.AgendaPage
 import com.xpeho.xpeapp.ui.page.qvst.QvstCampaignDetailPage
 import com.xpeho.xpeapp.ui.page.qvst.QvstPage
 import com.xpeho.xpeapp.ui.page.user.ProfilePage
@@ -75,6 +76,15 @@ fun NavGraphBuilder.navigationBuilder(
         Layout(navigationController) {
             if (ffManager.isFeatureEnabled(FeatureFlippingEnum.PROFILE)) {
                 ProfilePage(navigationController = navigationController)
+            } else {
+                DisabledFeaturePlaceHolder()
+            }
+        }
+    }
+    composable(route = Screens.Agenda.name) {
+        Layout(navigationController) {
+            if (ffManager.isFeatureEnabled(FeatureFlippingEnum.AGENDA)) {
+                AgendaPage()
             } else {
                 DisabledFeaturePlaceHolder()
             }

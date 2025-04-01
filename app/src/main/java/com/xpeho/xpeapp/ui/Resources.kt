@@ -63,6 +63,12 @@ class Resources {
                 redirection = Screens.Vacation.name,
                 featureFlippingId = FeatureFlippingEnum.VACATION,
             ),
+            Menu(
+                idImage = XpehoRes.calendar,
+                title = "Agenda",
+                redirection = Screens.Agenda.name,
+                featureFlippingId = FeatureFlippingEnum.AGENDA,
+            )
         )
 
     var listOfRequest: Array<RequestLeaveDetail> =

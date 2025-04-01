@@ -7,5 +7,6 @@ enum class Screens {
     Vacation,
     Colleague,
     Qvst,
-    Profile
+    Profile,
+    Agenda
 }
