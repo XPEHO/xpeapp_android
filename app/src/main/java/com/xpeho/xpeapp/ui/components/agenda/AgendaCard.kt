@@ -1,5 +1,6 @@
 package com.xpeho.xpeapp.ui.components.agenda
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -16,7 +17,6 @@ import com.xpeho.xpeho_ui_android.TagPill
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 import com.xpeho.xpeapp.R
 import androidx.core.graphics.toColorInt
-import com.xpeho.xpeapp.ui.components.layout.TagPillCustom
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -77,8 +77,17 @@ private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, co
             )
         }
         event.location?.takeIf { it.isNotEmpty() }?.let {
-            TagPillCustom(
-                iconResId = R.drawable.location,
+            TagPill(
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.location),
+                        contentDescription = "location",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(12.dp)
+                            .padding(end = 2.dp)
+                    )
+                },
                 label = it,
                 backgroundColor = color,
                 size = 9.sp

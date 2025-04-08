@@ -59,11 +59,11 @@ fun SidebarItemProfile(
                     val user = userInfosState.userInfos
                     Row {
                         Subtitle(
-                            label = user.lastname.uppercase()
+                            label = user.firstname.replaceFirstChar { it.uppercase()},
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Subtitle(
-                            label = user.firstname.replaceFirstChar { it.uppercase()},
+                            label = user.lastname.uppercase()
                         )
                     }
                     Text(
