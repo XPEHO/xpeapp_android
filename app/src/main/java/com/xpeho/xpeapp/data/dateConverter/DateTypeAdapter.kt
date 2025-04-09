@@ -10,8 +10,8 @@ import java.util.Locale
 class DateTypeAdapter : JsonSerializer<Date>, JsonDeserializer<Date> {
     // Format for input dates
     private val inputFormats = listOf(
+        SimpleDateFormat("yyyy-MM-dd", Locale.FRENCH),
         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH),
-        SimpleDateFormat("yyyy-MM-dd", Locale.FRENCH)
     )
     // Format for output dates
     private val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH)
@@ -28,7 +28,7 @@ class DateTypeAdapter : JsonSerializer<Date>, JsonDeserializer<Date> {
                     return format.parse(dateStr)
                 } catch (e: ParseException) {
                     // Ignore and try the next format
-                    println(e.message)
+                    println("Failed to parse date: $e")
                 }
             }
         }

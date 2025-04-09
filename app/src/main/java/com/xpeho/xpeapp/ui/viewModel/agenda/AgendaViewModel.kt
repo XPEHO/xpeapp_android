@@ -6,16 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xpeho.xpeapp.XpeApp
-import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
-import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
-import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
 import com.xpeho.xpeapp.ui.uiState.AgendaUiState
 
 import kotlinx.coroutines.launch
 
 class AgendaViewModel : ViewModel() {
 
-    var state: AgendaUiState by mutableStateOf(AgendaUiState.EMPTY)
+    var state: AgendaUiState by mutableStateOf(AgendaUiState.LOADING)
 
     private fun getAllEvents(page: String = "") {
         viewModelScope.launch {
@@ -24,12 +21,8 @@ class AgendaViewModel : ViewModel() {
 
             // Update state
             state = if (result != null) {
-                if (result.isEmpty()) {
-                    AgendaUiState.EMPTY
-                } else {
-                    val currentState = state as? AgendaUiState.SUCCESS ?: AgendaUiState.SUCCESS()
-                    currentState.copy(agendaEvent = result)
-                }
+                val currentState = state as? AgendaUiState.SUCCESS ?: AgendaUiState.SUCCESS()
+                currentState.copy(agendaEvent = result)
             } else {
                 AgendaUiState.ERROR("Erreur de chargement de tous les événements")
             }
@@ -43,12 +36,8 @@ class AgendaViewModel : ViewModel() {
 
             // Update state
             state = if (result != null) {
-                if (result.isEmpty()) {
-                    AgendaUiState.EMPTY
-                } else {
-                    val currentState = state as? AgendaUiState.SUCCESS ?: AgendaUiState.SUCCESS()
-                    currentState.copy(agendaEventType = result)
-                }
+                val currentState = state as? AgendaUiState.SUCCESS ?: AgendaUiState.SUCCESS()
+                currentState.copy(agendaEventType = result)
             } else {
                 AgendaUiState.ERROR("Erreur de chargement de tous les types d'événements")
             }
@@ -62,12 +51,8 @@ class AgendaViewModel : ViewModel() {
 
             // Update state
             state = if (result != null) {
-                if (result.isEmpty()) {
-                    AgendaUiState.EMPTY
-                } else {
-                    val currentState = state as? AgendaUiState.SUCCESS ?: AgendaUiState.SUCCESS()
-                    currentState.copy(agendaBirthday = result)
-                }
+                val currentState = state as? AgendaUiState.SUCCESS ?: AgendaUiState.SUCCESS()
+                currentState.copy(agendaBirthday = result)
             } else {
                 AgendaUiState.ERROR("Erreur de chargement de tous les anniversaires")
             }
