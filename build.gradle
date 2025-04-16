@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        compose_ui_version = '1.5.3'
+        compose_ui_version = '1.7.8'
         firestore_version = "22.0.2"
     }
 }
