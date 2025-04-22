@@ -15,6 +15,7 @@ import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.agenda.AgendaBirthdayItem
 import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
 import com.xpeho.xpeapp.ui.components.agenda.AgendaEventItem
+import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
 import com.xpeho.xpeapp.ui.uiState.AgendaUiState
@@ -51,11 +52,9 @@ fun AgendaPage(agendaViewModel : AgendaViewModel = viewModel()) {
             }
             is AgendaUiState.ERROR -> {
                 item {
-                    CustomDialog(
-                        title = stringResource(id = R.string.login_page_error_title),
-                        message = (agendaViewModel.state as AgendaUiState.ERROR).error,
-                    ) {
-                        agendaViewModel.resetState()
+                    NoContentPlaceHolder()
+                    LaunchedEffect(Unit) {
+                        agendaViewModel.updateState()
                     }
                 }
             }
