@@ -38,16 +38,24 @@ fun AgendaPage(agendaViewModel : AgendaViewModel = viewModel()) {
 
         when (agendaState) {
             is AgendaUiState.SUCCESS -> {
-                val state = agendaState
-                val events = state.agendaEvent.map { AgendaEventItem(it) }
-                val birthdays = state.agendaBirthday.map { AgendaBirthdayItem(it) }
-                val items = (events + birthdays).sortedBy { it.date }
-                item {
-                    AgendaCardList(
-                        items = items,
-                        eventsTypes = state.agendaEventType,
-                        collapsable = true
-                    )
+                val events = agendaState.agendaEvent
+                val birthdays = agendaState.agendaBirthday
+
+                if (events.isEmpty() && birthdays.isEmpty()) {
+                    item {
+                        NoContentPlaceHolder()
+                    }
+                } else {
+                    val eventItems = events.map { AgendaEventItem(it) }
+                    val birthdayItems = birthdays.map { AgendaBirthdayItem(it) }
+                    val items = (eventItems + birthdayItems).sortedBy { it.date }
+                    item {
+                        AgendaCardList(
+                            items = items,
+                            eventsTypes = agendaState.agendaEventType,
+                            collapsable = true
+                        )
+                    }
                 }
             }
             is AgendaUiState.ERROR -> {
@@ -58,13 +66,17 @@ fun AgendaPage(agendaViewModel : AgendaViewModel = viewModel()) {
                     }
                 }
             }
-
             is AgendaUiState.LOADING -> {
                 item {
                     LaunchedEffect(Unit) {
                         agendaViewModel.updateState()
                     }
                     AppLoader()
+                }
+            }
+            is AgendaUiState.EMPTY -> {
+                item {
+                    NoContentPlaceHolder()
                 }
             }
         }
