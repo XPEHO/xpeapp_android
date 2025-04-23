@@ -178,11 +178,8 @@ fun HomePage(navigationController: NavController) {
                         // If there was an error loading the events
                         is AgendaUiState.ERROR -> {
                             item {
-                                CustomDialog(
-                                    title = stringResource(id = R.string.login_page_error_title),
-                                    message = (agendaViewModel.state as AgendaUiState.ERROR).error,
-                                ) {
-                                    agendaViewModel.resetState()
+                                LaunchedEffect(Unit) {
+                                    agendaViewModel.updateState()
                                 }
                             }
                         }

@@ -15,6 +15,7 @@ import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.agenda.AgendaBirthdayItem
 import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
 import com.xpeho.xpeapp.ui.components.agenda.AgendaEventItem
+import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
 import com.xpeho.xpeapp.ui.uiState.AgendaUiState
@@ -37,35 +38,45 @@ fun AgendaPage(agendaViewModel : AgendaViewModel = viewModel()) {
 
         when (agendaState) {
             is AgendaUiState.SUCCESS -> {
-                val state = agendaState
-                val events = state.agendaEvent.map { AgendaEventItem(it) }
-                val birthdays = state.agendaBirthday.map { AgendaBirthdayItem(it) }
-                val items = (events + birthdays).sortedBy { it.date }
-                item {
-                    AgendaCardList(
-                        items = items,
-                        eventsTypes = state.agendaEventType,
-                        collapsable = true
-                    )
+                val events = agendaState.agendaEvent
+                val birthdays = agendaState.agendaBirthday
+
+                if (events.isEmpty() && birthdays.isEmpty()) {
+                    item {
+                        NoContentPlaceHolder()
+                    }
+                } else {
+                    val eventItems = events.map { AgendaEventItem(it) }
+                    val birthdayItems = birthdays.map { AgendaBirthdayItem(it) }
+                    val items = (eventItems + birthdayItems).sortedBy { it.date }
+                    item {
+                        AgendaCardList(
+                            items = items,
+                            eventsTypes = agendaState.agendaEventType,
+                            collapsable = true
+                        )
+                    }
                 }
             }
             is AgendaUiState.ERROR -> {
                 item {
-                    CustomDialog(
-                        title = stringResource(id = R.string.login_page_error_title),
-                        message = (agendaViewModel.state as AgendaUiState.ERROR).error,
-                    ) {
-                        agendaViewModel.resetState()
+                    NoContentPlaceHolder()
+                    LaunchedEffect(Unit) {
+                        agendaViewModel.updateState()
                     }
                 }
             }
-
             is AgendaUiState.LOADING -> {
                 item {
                     LaunchedEffect(Unit) {
                         agendaViewModel.updateState()
                     }
                     AppLoader()
+                }
+            }
+            is AgendaUiState.EMPTY -> {
+                item {
+                    NoContentPlaceHolder()
                 }
             }
         }
