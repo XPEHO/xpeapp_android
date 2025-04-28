@@ -7,5 +7,5 @@ data class AgendaBirthday(
     val id: Int,
     @SerializedName("first_name") val firstName: String,
     val birthdate: Date,
-    val email: String,
+    val email: String?,
 )

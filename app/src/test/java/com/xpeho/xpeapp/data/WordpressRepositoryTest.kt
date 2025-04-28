@@ -722,6 +722,19 @@ class WordpressRepositoryTest {
         }
 
         @Test
+        fun `getAllBirthdays with valid response returns birthdays with email null`() = runBlocking {
+            val birthdays = listOf(
+                AgendaBirthday(1, "firstname", SimpleDateFormat("yyyy-MM-dd").
+                parse("2023-01-01")!!, email = null)
+            )
+            coEvery { wordpressService.fetchBirthdays("page") } returns birthdays
+
+            val result = wordpressRepo.getAllBirthdays("page")
+
+            assertEquals(birthdays, result)
+        }
+
+        @Test
         fun `getAllBirthdays with network error returns null`() = runBlocking {
             coEvery { wordpressService.fetchBirthdays("page") } throws UnknownHostException()
 
