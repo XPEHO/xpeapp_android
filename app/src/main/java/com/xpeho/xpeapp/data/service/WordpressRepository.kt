@@ -2,7 +2,6 @@ package com.xpeho.xpeapp.data.service
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import com.google.api.Page
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.entity.QvstAnswerBody
 import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
