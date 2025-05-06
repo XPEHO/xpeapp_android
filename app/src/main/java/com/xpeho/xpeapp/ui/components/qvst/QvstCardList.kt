@@ -16,10 +16,6 @@ fun QvstCardList(
     campaigns: List<QvstCampaignEntity>,
     collapsable: Boolean = true
 ) {
-    if (campaigns.isEmpty()) {
-        // Display a placeholder if there is no campaign
-        NoContentPlaceHolder()
-    } else {
         // Display the list of campaigns
         Column {
             for (campaign in campaigns) {
@@ -32,5 +28,4 @@ fun QvstCardList(
                 Spacer(modifier = Modifier.height(10.dp))
             }
         }
-    }
 }

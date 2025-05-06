@@ -123,75 +123,82 @@ fun HomePage(navigationController: NavController) {
                     }
                 }
 
-                if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST)) {
-                    // When we have loaded the qvst campaigns
-                    when (campaignActiveViewModel.state) {
+                if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST) ||
+                    ffViewModel.isFeatureEnabled(FeatureFlippingEnum.AGENDA)) {
+                    fun hasContent(): Boolean {
+                        val campaigns = (campaignActiveViewModel.state as?
+                                QvstActiveUiState.SUCCESS)?.qvst ?: emptyList()
+                        val agendaState = agendaViewModel.state as? AgendaUiState.SUCCESS
+                        val events = agendaState?.agendaEvent ?: emptyList()
+                        val birthdays = agendaState?.agendaBirthday ?: emptyList()
 
-                        // If we successfully loaded the campaigns
-                        is QvstActiveUiState.SUCCESS -> {
-                            item {
-                                Title(label = "À ne pas manquer !")
-                                val campaigns: List<QvstCampaignEntity> =
-                                    (campaignActiveViewModel.state as QvstActiveUiState.SUCCESS).qvst
-                                QvstCardList(
-                                    navigationController = navigationController,
-                                    campaigns = campaigns,
-                                    collapsable = false
-                                )
+                        return campaigns.isNotEmpty() || events.isNotEmpty()
+                                || birthdays.isNotEmpty()
+                    }
+
+                    item {
+                        Title(label = "À ne pas manquer !")
+                    }
+
+                    if (hasContent()) {
+                        if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST)) {
+                            when (campaignActiveViewModel.state) {
+                                is QvstActiveUiState.SUCCESS -> {
+                                    item {
+                                        val campaigns = (campaignActiveViewModel.state
+                                                as QvstActiveUiState.SUCCESS).qvst
+                                        QvstCardList(
+                                            navigationController = navigationController,
+                                            campaigns = campaigns,
+                                            collapsable = false
+                                        )
+                                    }
+                                }
+                                is QvstActiveUiState.ERROR -> {
+                                    item {
+                                        CustomDialog(
+                                            title = stringResource(id = R.string.login_page_error_title),
+                                            message = (campaignActiveViewModel.state as
+                                                    QvstActiveUiState.ERROR).error,
+                                        ) {
+                                            campaignActiveViewModel.resetState()
+                                        }
+                                    }
+                                }
+                                else -> {}
                             }
                         }
 
-                        // If there was an error loading the campaigns
-                        is QvstActiveUiState.ERROR -> {
-                            item {
-                                CustomDialog(
-                                    title = stringResource(id = R.string.login_page_error_title),
-                                    message = (campaignActiveViewModel.state as QvstActiveUiState.ERROR).error,
-                                ) {
-                                    campaignActiveViewModel.resetState()
+                        if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.AGENDA)) {
+                            when (agendaViewModel.state) {
+                                is AgendaUiState.SUCCESS -> {
+                                    item {
+                                        val state = agendaViewModel.state as AgendaUiState.SUCCESS
+                                        val events = state.agendaEvent.map { AgendaEventItem(it) }
+                                        val birthdays = state.agendaBirthday.map { AgendaBirthdayItem(it) }
+                                        val items = (events + birthdays).sortedBy { it.date }
+                                        AgendaCardList(
+                                            items = items,
+                                            eventsTypes = state.agendaEventType,
+                                            collapsable = false
+                                        )
+                                    }
                                 }
+                                is AgendaUiState.ERROR -> {
+                                    item {
+                                        LaunchedEffect(Unit) {
+                                            agendaViewModel.updateState()
+                                        }
+                                    }
+                                }
+                                else -> {}
                             }
+                        }
+                    } else {
+                        item {
+                            NoContentPlaceHolder()
                         }
                     }
-                }
-
-                if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.AGENDA)) {
-                    // When we have loaded the agenda events
-                    when (agendaViewModel.state) {
-
-                        // If we successfully loaded the events
-                        is AgendaUiState.SUCCESS -> {
-                            item {
-                                val state = agendaViewModel.state as AgendaUiState.SUCCESS
-                                val events = state.agendaEvent.map { AgendaEventItem(it) }
-                                val birthdays = state.agendaBirthday.map { AgendaBirthdayItem(it) }
-                                val items = (events + birthdays).sortedBy { it.date }
-                                val eventsTypes = state.agendaEventType
-                                AgendaCardList(
-                                    items = items,
-                                    eventsTypes = eventsTypes,
-                                    collapsable = false
-                                )
-                            }
-                        }
-
-                        // If there was an error loading the events
-                        is AgendaUiState.ERROR -> {
-                            item {
-                                LaunchedEffect(Unit) {
-                                    agendaViewModel.updateState()
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!ffViewModel.isFeatureEnabled(FeatureFlippingEnum.NEWSLETTERS)
-                    && !ffViewModel.isFeatureEnabled(FeatureFlippingEnum.QVST) && !ffViewModel.isFeatureEnabled(
-                        FeatureFlippingEnum.AGENDA
-                    )
-                ) {
-                    item { NoContentPlaceHolder() }
                 }
             }
         }
