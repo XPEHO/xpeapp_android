@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
     id "com.google.devtools.ksp"
-    id "org.sonarqube" version "4.2.1.3168"
+    id "org.sonarqube" version "6.1.0.5360"
     id 'jacoco'
 }
 
