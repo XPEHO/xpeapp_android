@@ -6,12 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.ui.components.AppLoader
-import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.agenda.AgendaBirthdayItem
 import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
 import com.xpeho.xpeapp.ui.components.agenda.AgendaEventItem
@@ -62,14 +59,14 @@ fun AgendaPage(agendaViewModel : AgendaViewModel = viewModel()) {
                 item {
                     NoContentPlaceHolder()
                     LaunchedEffect(Unit) {
-                        agendaViewModel.updateState()
+                        agendaViewModel.updateStateForMonth()
                     }
                 }
             }
             is AgendaUiState.LOADING -> {
                 item {
                     LaunchedEffect(Unit) {
-                        agendaViewModel.updateState()
+                        agendaViewModel.updateStateForMonth()
                     }
                     AppLoader()
                 }
