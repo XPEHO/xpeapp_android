@@ -63,11 +63,11 @@ class AgendaViewModel : ViewModel() {
         state = AgendaUiState.EMPTY
     }
 
-    fun updateState() {
+    fun updateStateForMonth() {
         resetState()
-        getAllEvents()
+        getAllEvents("month")
         getAllEventsTypes()
-        getAllBirthdays()
+        getAllBirthdays("month")
     }
 
     fun updateStateForWeek() {

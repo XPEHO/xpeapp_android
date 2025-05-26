@@ -17,7 +17,6 @@ import androidx.navigation.NavController
 import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
-import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
 import com.xpeho.xpeapp.domain.FeatureFlippingState
 import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.agenda.AgendaBirthdayItem
@@ -187,7 +186,7 @@ fun HomePage(navigationController: NavController) {
                                 is AgendaUiState.ERROR -> {
                                     item {
                                         LaunchedEffect(Unit) {
-                                            agendaViewModel.updateState()
+                                            agendaViewModel.updateStateForWeek()
                                         }
                                     }
                                 }
