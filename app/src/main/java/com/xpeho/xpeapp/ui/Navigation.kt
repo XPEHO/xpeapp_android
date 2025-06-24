@@ -8,6 +8,7 @@ import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.enums.Screens
 import com.xpeho.xpeapp.ui.components.Layout
 import com.xpeho.xpeapp.ui.components.layout.DisabledFeaturePlaceHolder
+import com.xpeho.xpeapp.ui.page.AgencyPage
 import com.xpeho.xpeapp.ui.page.HomePage
 import com.xpeho.xpeapp.ui.page.LoginPage
 import com.xpeho.xpeapp.ui.page.NewsletterPage
@@ -88,6 +89,12 @@ fun NavGraphBuilder.navigationBuilder(
             } else {
                 DisabledFeaturePlaceHolder()
             }
+        }
+    }
+
+    composable(route = Screens.Agency.name) {
+        Layout(navigationController) {
+            AgencyPage()
         }
     }
 }

@@ -8,5 +8,6 @@ enum class Screens {
     Colleague,
     Qvst,
     Profile,
-    Agenda
+    Agenda,
+    Agency
 }

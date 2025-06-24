@@ -146,6 +146,17 @@ fun Sidebar(
                             }
                         }
                         SidebarItem(
+                            icon = painterResource(id = R.drawable.building),
+                            label = stringResource(id = R.string.agency_view_label),
+                            onClick = {
+                                navigationController.navigate(Screens.Agency.name)
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(20.dp)
+                        )
+                        SidebarItem(
                             icon = painterResource(id = R.drawable.about),
                             label = stringResource(id = R.string.about_view_about_label),
                             onClick = {
