@@ -1,6 +1,7 @@
 package com.xpeho.xpeapp.ui.page
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.xpeho.xpeapp.BuildConfig
 import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
@@ -124,7 +126,7 @@ private fun WifiCard(clipboardManager: ClipboardManager, context: Context) {
     CollapsableCard(
         label = "Wifi",
         tags = {
-            TagPill(label = "",
+            TagPill(label = BuildConfig.WIFI_SSID,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR, size = 9.sp)
         },
         button = {
@@ -136,10 +138,9 @@ private fun WifiCard(clipboardManager: ClipboardManager, context: Context) {
                 backgroundColor = XpehoColors.XPEHO_COLOR,
                 labelColor = Color.White
             ) {
-                clipboardManager.setText(AnnotatedString(
-                    ""))
-                android.widget.Toast.makeText(context,
-                    "Wifi copié", android.widget.Toast.LENGTH_SHORT).show()
+                clipboardManager.setText(AnnotatedString(BuildConfig.WIFI_PASSWORD))
+                Toast.makeText(context,
+                    "Wifi copié", Toast.LENGTH_SHORT).show()
             }
         },
         icon = {
@@ -161,7 +162,7 @@ private fun GuestWifiCard(clipboardManager: ClipboardManager, context: Context) 
     CollapsableCard(
         label = "Wifi invité",
         tags = {
-            TagPill(label = "",
+            TagPill(label = BuildConfig.WIFI_GUEST_SSID,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
         },
@@ -174,11 +175,10 @@ private fun GuestWifiCard(clipboardManager: ClipboardManager, context: Context) 
                 backgroundColor = XpehoColors.XPEHO_COLOR,
                 labelColor = Color.White
             ) {
-                clipboardManager.setText(AnnotatedString(
-                    ""))
-                android.widget.Toast.makeText(context,
+                clipboardManager.setText(AnnotatedString(BuildConfig.WIFI_GUEST_PASSWORD))
+                Toast.makeText(context,
                     "Wifi invité copié",
-                    android.widget.Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT).show()
             }
         },
         icon = {
@@ -200,7 +200,7 @@ private fun PrinterCard() {
     CollapsableCard(
         label = "Imprimante de l'agence",
         tags = {
-            TagPill(label = "",
+            TagPill(label = BuildConfig.PRINTER_NAME,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
         },
@@ -224,7 +224,7 @@ private fun AlarmCard(showAlarmcode: MutableState<Boolean>) {
         label = "Alarme bâtiment",
         tags = {
             TagPill(
-                label = if (showAlarmcode.value) ""
+                label = if (showAlarmcode.value) BuildConfig.ALARM_CODE
                 else "•••••••",
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp
@@ -263,7 +263,7 @@ private fun DigicodeCard(showDigicode: MutableState<Boolean>) {
         label = "Digicode portail Synergie",
         tags = {
             TagPill(
-                label = if (showDigicode.value) "" else "•••••••", 
+                label = if (showDigicode.value) BuildConfig.DIGICODE else "•••••••", 
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp
             )
@@ -299,10 +299,10 @@ private fun WaterFountainCard() {
     CollapsableCard(
         label = "Société fontaine à eau",
         tags = {
-            TagPill(label = "",
+            TagPill(label = BuildConfig.WATER_FOUNTAIN_COMPANY,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
-            TagPill(label = "",
+            TagPill(label = BuildConfig.WATER_FOUNTAIN_CONTACT,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
         },
@@ -325,16 +325,16 @@ private fun CleaningCard() {
     CollapsableCard(
         label = "Ménage (un vendredi sur deux)",
         tags = {
-            TagPill(label = "",
+            TagPill(label = BuildConfig.CLEANING_COMPANY,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
-            TagPill(label = "",
+            TagPill(label = BuildConfig.CLEANING_CONTACT,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
-            TagPill(label = "",
+            TagPill(label = BuildConfig.CLEANING_MANAGER,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
-            TagPill(label = "",
+            TagPill(label = BuildConfig.CLEANING_MANAGER_CONTACT,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
         },
@@ -357,16 +357,16 @@ private fun OwnersCard() {
     CollapsableCard(
         label = "Propriétaires",
         tags = {
-            TagPill(label = "",
+            TagPill(label = BuildConfig.OWNER1_NAME,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
-            TagPill(label = "",
+            TagPill(label = BuildConfig.OWNER1_CONTACT,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
-            TagPill(label = "",
+            TagPill(label = BuildConfig.OWNER2_NAME,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
-            TagPill(label = "",
+            TagPill(label = BuildConfig.OWNER2_CONTACT,
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
                 size = 9.sp)
         },
