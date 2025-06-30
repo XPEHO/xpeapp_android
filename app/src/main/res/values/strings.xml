@@ -67,5 +67,6 @@
     <string name="force_update_popup_title_label">Mise à jour requise</string>
     <string name="force_update_popup_message_label">La version %s est disponible !\nVeuillez mettre à jour l’application pour continuer.</string>
     <string name="force_update_popup_button_label">Mettre à jour</string>
+    <string name="agency_view_label">Agence</string>
 
 </resources>
