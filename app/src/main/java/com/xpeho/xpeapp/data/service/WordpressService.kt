@@ -107,5 +107,10 @@ interface WordpressService {
         @Query("page") page: String = "",
         ): List<AgendaBirthday>
 
+    // Storage Feature
+    // Fetch images from storage
+    @GET("xpeho/v1/image-storage/{imageName}")
+    suspend fun fetchImageStorage(
+        @Path("imageName", encoded = true) imageName: String,
+    ): Response<okhttp3.ResponseBody>
 }
-

@@ -1,5 +1,8 @@
 package com.xpeho.xpeapp.ui.viewModel.newsletter
 
+import android.graphics.BitmapFactory.decodeByteArray
+import android.util.Log
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
@@ -12,6 +15,7 @@ import kotlinx.coroutines.launch
 class NewsletterViewModel : ViewModel() {
 
     private val firebaseService = XpeApp.appModule.firebaseService
+    private val wordpressRepository = XpeApp.appModule.wordpressRepository
 
     val state = mutableStateOf(
         listOf<Newsletter>()
@@ -24,12 +28,23 @@ class NewsletterViewModel : ViewModel() {
         getNewsletters()
     }
 
+    // Get the newsletters from Firestore and the preview image from WordPress
     private fun getNewsletters() {
         isLoading.value = true
         viewModelScope.launch {
             state.value = firebaseService.fetchNewsletters()
             lastNewsletter.value = state.value.firstOrNull()
-            lastNewsletterPreview.value = firebaseService.getLastNewsletterPreview(lastNewsletter.value?.picture)
+            val previewPath = lastNewsletter.value?.picture
+            var imageBitmap: ImageBitmap? = null
+            if (previewPath != null) {
+                val imageBytes = wordpressRepository.getImage(previewPath)
+                if (imageBytes != null) {
+                    imageBitmap = decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
+                } else {
+                    Log.e("Newsletters WordPress Image", "getImage a retourné null pour le chemin $previewPath")
+                }
+            }
+            lastNewsletterPreview.value = imageBitmap
             isLoading.value = false
         }
     }
