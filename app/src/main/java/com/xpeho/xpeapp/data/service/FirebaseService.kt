@@ -1,13 +1,9 @@
 package com.xpeho.xpeapp.data.service
 
-import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.xpeho.xpeapp.data.FEATURE_FLIPPING_COLLECTION
 import com.xpeho.xpeapp.data.NEWSLETTERS_COLLECTION
 import com.xpeho.xpeapp.data.model.FeatureFlipping
@@ -84,20 +80,4 @@ class FirebaseService {
         return newslettersList.sortedByDescending { it.date }
     }
 
-    suspend fun getLastNewsletterPreview(previewPath: String?): ImageBitmap? {
-        var imageBitmap: ImageBitmap? = null
-
-        if (previewPath != null) {
-            try {
-                val storageRef = FirebaseStorage.getInstance().reference.child(previewPath)
-                val bytes = storageRef.getBytes(Long.MAX_VALUE).await()
-                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                imageBitmap = bitmap.asImageBitmap()
-            } catch (e: FirebaseException) {
-                Log.e("getLastNewsletterPreview", "Error fetching image: ", e)
-            }
-        }
-
-        return imageBitmap
-    }
 }

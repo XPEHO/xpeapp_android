@@ -325,6 +325,26 @@ class WordpressRepository(
         )
     }
 
+    /// Storage features methods
+    // getImage
+    suspend fun getImage(imageName: String): ByteArray? {
+        return handleServiceExceptions(
+            tryBody = {
+                val response = api.fetchImageStorage(imageName)
+                if (response.isSuccessful) {
+                    response.body()?.bytes()
+                } else {
+                    null
+                }
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: getImage", "Network error: ${e.message}")
+                null
+            }
+        )
+    }
+
+
     // Exceptions handling
 
     @Suppress("ReturnCount")
