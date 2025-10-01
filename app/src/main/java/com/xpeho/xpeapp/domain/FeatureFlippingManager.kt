@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.internal.toImmutableMap
 import java.io.IOException
 
 class FeatureFlippingManager(
@@ -62,7 +61,7 @@ class FeatureFlippingManager(
             }
         }
 
-        _featuresState.value = FeatureFlippingState.SUCCESS(featureEnabled.toImmutableMap())
+        _featuresState.value = FeatureFlippingState.SUCCESS(featureEnabled.toMap())
     }
 }
 

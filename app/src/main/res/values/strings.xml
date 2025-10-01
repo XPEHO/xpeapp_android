@@ -35,7 +35,7 @@
     <string name="qvst_answers_saved_title">QVST</string>
     <string name="qvst_campaign_detail_all_questions_answered">Vous avez répondu à toutes les questions</string>
     <string name="qvst_campaign_detail_questions_answered">
-        Vous avez répondu à %s questions sur %s
+        Vous avez répondu à %1$s questions sur %2$s
     </string>
     <string name="qvst_campaign_detail_answered_questions">Questions répondues</string>
     <string name="qvst_campaign_detail_answer">Réponse : %s</string>
