@@ -138,7 +138,7 @@ fun QvstCampaignDetailPage(
                         Column {
                             campaign?.let {
                                 Title(
-                                    label = it.themeName
+                                    label = it.name
                                 )
                             }
                             Spacer(modifier = Modifier.height(40.dp))
@@ -293,5 +293,15 @@ fun redirectOnSuccess(
                 }
             )
         }
+    }
+}
+
+// Extension pour remplacer la dernière virgule par " et "
+fun String.replaceLastCommaWithEt(): String {
+    val lastComma = this.lastIndexOf(", ")
+    return if (lastComma != -1) {
+        this.substring(0, lastComma) + " et " + this.substring(lastComma + 2)
+    } else {
+        this
     }
 }
