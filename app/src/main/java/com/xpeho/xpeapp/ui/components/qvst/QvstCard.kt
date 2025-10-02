@@ -2,7 +2,10 @@ package com.xpeho.xpeapp.ui.components.qvst
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -108,12 +111,17 @@ private fun SeeResultButton(campaign: QvstCampaignEntity) {
 private fun getTagsList(campaign: QvstCampaignEntity): @Composable() (() -> Unit) {
 
     // Init the tagsList depending the data that we got
-    val tagPillTheme: @Composable() () -> Unit = {
-        TagPill(
-            label = campaign.themeName,
-            backgroundColor = XpehoColors.GREEN_DARK_COLOR,
-            size = 9.sp
-        )
+    val tagPillThemes: @Composable() () -> Unit = {
+        Row {
+            campaign.themeNames.forEach { theme ->
+                TagPill(
+                    label = theme,
+                    backgroundColor = XpehoColors.GREEN_DARK_COLOR,
+                    size = 9.sp
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+        }
     }
 
     var tagPillDeadline: @Composable() () -> Unit
@@ -175,7 +183,7 @@ private fun getTagsList(campaign: QvstCampaignEntity): @Composable() (() -> Unit
     }
 
     return {
-        tagPillTheme.invoke()
+        tagPillThemes.invoke()
         tagPillDeadline.invoke()
         tagPillCompletion.invoke()
     }

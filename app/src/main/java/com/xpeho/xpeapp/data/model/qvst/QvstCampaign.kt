@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class QvstCampaign(
     val id: String,
     val name: String,
-    val theme: QvstTheme,
+    @SerializedName("themes") val themes: List<QvstTheme> = emptyList(),
     val status: String,
     @SerializedName("start_date") val startDate: String,
     @SerializedName("end_date") val endDate: String,

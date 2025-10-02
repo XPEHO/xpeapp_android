@@ -149,7 +149,7 @@ class WordpressRepositoryTest {
                 QvstCampaignEntity(
                     id = "2",
                     name = "Campaign 2",
-                    themeName = "Theme 2",
+                    themeNames = listOf("Theme 2"),
                     status = "CLOSED",
                     outdated = true,
                     completed = true,
@@ -171,7 +171,7 @@ class WordpressRepositoryTest {
                 QvstCampaignEntity(
                     id = "3",
                     name = "Campaign 3",
-                    themeName = "Theme 3",
+                    themeNames = listOf("Theme 3"),
                     status = "CLOSED",
                     outdated = true,
                     completed = true,
@@ -195,10 +195,10 @@ class WordpressRepositoryTest {
                 QvstCampaign(
                     id = "campaignId",
                     name = "campaignName",
-                    theme = QvstTheme(
+                    themes = listOf(QvstTheme(
                         "themeId",
                         name = "themeName",
-                    ),
+                    )),
                     status = "OPEN",
                     startDate = LocalDate.now().minusDays(10).toString(),
                     participationRate = 0.5.toString(),
@@ -212,7 +212,7 @@ class WordpressRepositoryTest {
 
             assertEquals(1, result.size)
             assertEquals("campaignName", result[0].name)
-            assertEquals("themeName", result[0].themeName)
+            assertEquals(listOf("themeName"), result[0].themeNames)
             assertEquals(10, result[0].remainingDays)
             assertEquals(false, result[0].outdated)
             assertEquals("resultLink", result[0].resultLink)
@@ -224,10 +224,10 @@ class WordpressRepositoryTest {
                 QvstCampaign(
                     id = "campaignId",
                     name = "campaignName",
-                    theme = QvstTheme(
+                    themes = listOf(QvstTheme(
                         "themeId",
                         name = "themeName",
-                    ),
+                    )),
                     status = "CLOSED",
                     startDate = LocalDate.now().minusDays(10).toString(),
                     endDate = LocalDate.now().minusDays(1).toString(),
@@ -241,7 +241,7 @@ class WordpressRepositoryTest {
 
             assertEquals(1, result.size)
             assertEquals("campaignName", result[0].name)
-            assertEquals("themeName", result[0].themeName)
+            assertEquals(listOf("themeName"), result[0].themeNames)
             assertEquals(0, result[0].remainingDays)
             assertEquals(true, result[0].outdated)
             assertEquals("resultLink", result[0].resultLink)
@@ -253,10 +253,10 @@ class WordpressRepositoryTest {
                 QvstCampaign(
                     id = "campaignId",
                     name = "campaignName",
-                    theme = QvstTheme(
+                    themes = listOf(QvstTheme(
                         "themeId",
                         name = "themeName"
-                    ),
+                    )),
                     status = "OPEN",
                     endDate = LocalDate.now().plusDays(5).toString(),
                     startDate = LocalDate.now().minusDays(10).toString(),
@@ -277,7 +277,7 @@ class WordpressRepositoryTest {
 
             assertEquals(1, result.size)
             assertEquals("campaignName", result[0].name)
-            assertEquals("themeName", result[0].themeName)
+            assertEquals(listOf("themeName"), result[0].themeNames)
             assertEquals(true, result[0].completed)
             assertEquals("resultLink", result[0].resultLink)
         }
@@ -288,10 +288,10 @@ class WordpressRepositoryTest {
                 QvstCampaign(
                     id = "campaignId",
                     name = "campaignName",
-                    theme = QvstTheme(
+                    themes = listOf(QvstTheme(
                         "themeId",
                         name = "themeName"
-                    ),
+                    )),
                     status = "OPEN",
                     endDate = LocalDate.now().plusDays(5).toString(),
                     startDate = LocalDate.now().minusDays(10).toString(),
@@ -305,7 +305,7 @@ class WordpressRepositoryTest {
 
             assertEquals(1, result.size)
             assertEquals("campaignName", result[0].name)
-            assertEquals("themeName", result[0].themeName)
+            assertEquals(listOf("themeName"), result[0].themeNames)
             assertEquals(false, result[0].completed)
             assertEquals("resultLink", result[0].resultLink)
         }
@@ -316,10 +316,10 @@ class WordpressRepositoryTest {
                 QvstCampaign(
                     id = "campaignId",
                     name = "campaignName",
-                    theme = QvstTheme(
+                    themes = listOf(QvstTheme(
                         "themeId",
                         name = "themeName"
-                    ),
+                    )),
                     status = "DRAFT",
                     endDate = LocalDate.now().plusDays(5).toString(),
                     startDate = LocalDate.now().minusDays(10).toString(),
@@ -340,6 +340,36 @@ class WordpressRepositoryTest {
 
             assertEquals(0, result.size)
         }
+
+        @Test
+        fun `getCampaignsEntitiesFromModels with multiple themes`() {
+            val campaigns = listOf(
+                QvstCampaign(
+                    id = "campaignId",
+                    name = "campaignName",
+                    themes = listOf(
+                        QvstTheme("themeId1", name = "themeName1"),
+                        QvstTheme("themeId2", name = "themeName2"),
+                        QvstTheme("themeId3", name = "themeName3")
+                    ),
+                    status = "OPEN",
+                    startDate = LocalDate.now().minusDays(10).toString(),
+                    participationRate = 0.5.toString(),
+                    endDate = LocalDate.now().plusDays(10).toString(),
+                    action = "resultLink"
+                )
+            )
+            val progress = listOf<QvstProgress>()
+
+            val result = wordpressRepo.getCampaignsEntitiesFromModels(campaigns, progress)
+
+            assertEquals(1, result.size)
+            assertEquals("campaignName", result[0].name)
+            assertEquals(listOf("themeName1", "themeName2", "themeName3"), result[0].themeNames)
+            assertEquals(10, result[0].remainingDays)
+            assertEquals(false, result[0].outdated)
+            assertEquals("resultLink", result[0].resultLink)
+        }
     }
 
     class GetQvstCampaignsTests : BaseTest() {
@@ -352,10 +382,10 @@ class WordpressRepositoryTest {
                 QvstCampaign(
                     id = "campaignId",
                     name = "campaignName",
-                    theme = QvstTheme(
+                    themes = listOf(QvstTheme(
                         "themeId",
                         name = "themeName"
-                    ),
+                    )),
                     status = "OPEN",
                     startDate = LocalDate.now().minusDays(10).toString(),
                     endDate = LocalDate.now().plusDays(10).toString(),
@@ -395,10 +425,10 @@ class WordpressRepositoryTest {
                 QvstCampaign(
                     id = "campaignId",
                     name = "campaignName",
-                    theme = QvstTheme(
+                    themes = listOf(QvstTheme(
                         "themeId",
                         name = "themeName"
-                    ),
+                    )),
                     status = "OPEN",
                     startDate = LocalDate.now().minusDays(10).toString(),
                     endDate = LocalDate.now().plusDays(10).toString(),

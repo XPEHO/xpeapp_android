@@ -106,12 +106,12 @@ class WordpressRepository(
 
         val completed = campaignProgress?.let {
             it.answeredQuestions >= it.totalQuestions
-        } ?: false
+        } == true
 
         return QvstCampaignEntity(
             id = campaign.id,
             name = campaign.name,
-            themeName = campaign.theme.name,
+            themeNames = campaign.themes.map { it.name },
             status = campaign.status,
             outdated = remainingDays <= 0,
             completed = completed,
@@ -414,4 +414,3 @@ class WordpressRepository(
         return today.format(formatter)
     }
 }
-
