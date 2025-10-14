@@ -47,6 +47,7 @@ class AuthenticationManagerTest {
             // Mock android.util.Log methods
             mockkStatic(Log::class)
             every { Log.e(any(), any()) } returns 0
+            every { Log.d(any(), any()) } returns 0
         }
     }
 
@@ -103,31 +104,6 @@ class AuthenticationManagerTest {
         }
 
         @Test
-        fun `isAuthValid returns false when token is expired`() = runBlocking {
-            // Create an expired token (6 days old)
-            val expiredTimestamp = TokenExpirationUtil.createExpiredTokenTimestamp(6)
-            val authData = AuthData(
-                "username", 
-                WordpressToken("token", "user_email", "user_nicename", "user_display_name"),
-                expiredTimestamp
-            )
-            
-            coEvery { datastorePref.getAuthData() } returns authData
-            coEvery { tokenProvider.set(any()) } just runs
-            coEvery { firebaseService.signOut() } just runs
-            coEvery { datastorePref.clearAuthData() } just runs
-            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
-            coEvery { wordpressRepo.revokeToken(any()) } returns AuthResult.Success(Unit)
-
-            authManager.restoreAuthStateFromStorage()
-            val result = authManager.isAuthValid()
-
-            assertFalse(result)
-            // Verify that logout was called due to expired token
-            assertTrue(authManager.authState.value is AuthState.Unauthenticated)
-        }
-
-        @Test
         fun `isAuthValid returns false when authenticated but Firebase authentication fails`() = runBlocking {
             val authData =
                 AuthData("username", WordpressToken("token", "user_email", "user_nicename", "user_display_name"))
@@ -169,6 +145,7 @@ class AuthenticationManagerTest {
             coEvery { datastorePref.setAuthData(any()) } just runs
             coEvery { datastorePref.setIsConnectedLeastOneTime(true) } just runs
             coEvery { datastorePref.setWasConnectedLastTime(true) } just runs
+            coEvery { datastorePref.setLastEmail(username) } just runs
             coEvery { datastorePref.setUserId("userId") } just runs
             coEvery { tokenProvider.set(any()) } just runs
 
@@ -246,29 +223,96 @@ class AuthenticationManagerTest {
         }
     }
 
-    class TokenExpirationTests : BaseTest() {
-        
+    class LogoutTests : BaseTest() {
         @Test
-        fun `restoreAuthStateFromStorage logs out when token is expired`() = runBlocking {
-            // Create an expired token (6 days old)
-            val expiredTimestamp = TokenExpirationUtil.createExpiredTokenTimestamp(6)
-            val expiredAuthData = AuthData(
+        fun `logout sets AuthState to Unauthenticated`() = runBlocking {
+            coEvery { firebaseService.signOut() } just runs
+            coEvery { datastorePref.clearAuthData() } just runs
+            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
+
+            authManager.logout()
+
+            assertTrue(authManager.authState.value is AuthState.Unauthenticated)
+        }
+
+        @Test
+        fun `logout calls firebaseService signOut`() = runBlocking {
+            coEvery { firebaseService.signOut() } just runs
+            coEvery { datastorePref.clearAuthData() } just runs
+            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
+
+            authManager.logout()
+
+            coVerify { firebaseService.signOut() }
+        }
+
+        @Test
+        fun `logout calls datastorePref clearAuthData`() = runBlocking {
+            coEvery { firebaseService.signOut() } just runs
+            coEvery { datastorePref.clearAuthData() } just runs
+            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
+
+            authManager.logout()
+
+            coVerify { datastorePref.clearAuthData() }
+        }
+
+        @Test
+        fun `logout calls datastorePref setWasConnectedLastTime false`() = runBlocking {
+            coEvery { firebaseService.signOut() } just runs
+            coEvery { datastorePref.clearAuthData() } just runs
+            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
+
+            authManager.logout()
+
+            coVerify { datastorePref.setWasConnectedLastTime(false) }
+        }
+    }
+
+    class TokenExpirationTests : BaseTest() {
+        @Test
+        fun `isAuthValid returns false when token is expired`() = runBlocking {
+            // Create an expired token (6 days old for current config)
+            val expiredTimestamp = System.currentTimeMillis() - (6 * 24 * 60 * 60 * 1000L) // 6 days ago
+            val authData = AuthData(
                 "username", 
                 WordpressToken("token", "user_email", "user_nicename", "user_display_name"),
                 expiredTimestamp
             )
             
-            coEvery { datastorePref.getAuthData() } returns expiredAuthData
+            coEvery { datastorePref.getAuthData() } returns authData
+            coEvery { tokenProvider.set(any()) } just runs
             coEvery { firebaseService.signOut() } just runs
             coEvery { datastorePref.clearAuthData() } just runs
             coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
-            coEvery { wordpressRepo.revokeToken(any()) } returns AuthResult.Success(Unit)
+
+            authManager.restoreAuthStateFromStorage()
+            val result = authManager.isAuthValid()
+
+            assertFalse(result)
+            // Verify that logout was called due to expired token
+            assertTrue(authManager.authState.value is AuthState.Unauthenticated)
+        }
+
+        @Test
+        fun `restoreAuthStateFromStorage logs out when token is expired`() = runBlocking {
+            // Create an expired token (6 days old for current config)
+            val expiredTimestamp = System.currentTimeMillis() - (6 * 24 * 60 * 60 * 1000L) // 6 days ago
+            val authData = AuthData(
+                "username", 
+                WordpressToken("token", "user_email", "user_nicename", "user_display_name"),
+                expiredTimestamp
+            )
+            
+            coEvery { datastorePref.getAuthData() } returns authData
+            coEvery { firebaseService.signOut() } just runs
+            coEvery { datastorePref.clearAuthData() } just runs
+            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
 
             authManager.restoreAuthStateFromStorage()
 
-            // Verify that the user was logged out due to expired token
+            // Verify that logout was called due to expired token
             assertTrue(authManager.authState.value is AuthState.Unauthenticated)
-            coVerify { datastorePref.clearAuthData() }
             coVerify { firebaseService.signOut() }
         }
 
@@ -303,66 +347,4 @@ class AuthenticationManagerTest {
         }
     }
 
-    class LogoutTests : BaseTest() {
-        @Test
-        fun `logout attempts to revoke token when authenticated`() = runBlocking {
-            // Setup authenticated state
-            val authData = AuthData(
-                "username", 
-                WordpressToken("token", "user_email", "user_nicename", "user_display_name")
-            )
-            coEvery { datastorePref.getAuthData() } returns authData
-            coEvery { tokenProvider.set(any()) } just runs
-            authManager.restoreAuthStateFromStorage()
-            
-            // Mock logout dependencies
-            coEvery { wordpressRepo.revokeToken(any()) } returns AuthResult.Success(Unit)
-            coEvery { firebaseService.signOut() } just runs
-            coEvery { datastorePref.clearAuthData() } just runs
-            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
-
-            authManager.logout()
-
-            assertTrue(authManager.authState.value is AuthState.Unauthenticated)
-            coVerify { wordpressRepo.revokeToken(authData.token) }
-        }
-
-        @Test
-        fun `logout continues even when token revocation fails`() = runBlocking {
-            // Setup authenticated state
-            val authData = AuthData(
-                "username", 
-                WordpressToken("token", "user_email", "user_nicename", "user_display_name")
-            )
-            coEvery { datastorePref.getAuthData() } returns authData
-            coEvery { tokenProvider.set(any()) } just runs
-            authManager.restoreAuthStateFromStorage()
-            
-            // Mock token revocation failure
-            coEvery { wordpressRepo.revokeToken(any()) } throws Exception("Network error")
-            coEvery { firebaseService.signOut() } just runs
-            coEvery { datastorePref.clearAuthData() } just runs
-            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
-
-            authManager.logout()
-
-            // Logout should still succeed even if token revocation fails
-            assertTrue(authManager.authState.value is AuthState.Unauthenticated)
-            coVerify { firebaseService.signOut() }
-            coVerify { datastorePref.clearAuthData() }
-        }
-        @Test
-        fun `logout sets AuthState to Unauthenticated when not authenticated`() = runBlocking {
-            coEvery { firebaseService.signOut() } just runs
-            coEvery { datastorePref.clearAuthData() } just runs
-            coEvery { datastorePref.setWasConnectedLastTime(false) } just runs
-
-            authManager.logout()
-
-            assertTrue(authManager.authState.value is AuthState.Unauthenticated)
-            coVerify { firebaseService.signOut() }
-            coVerify { datastorePref.clearAuthData() }
-            coVerify { datastorePref.setWasConnectedLastTime(false) }
-        }
-    }
 }

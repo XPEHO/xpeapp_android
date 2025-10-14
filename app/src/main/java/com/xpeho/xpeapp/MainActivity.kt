@@ -78,8 +78,12 @@ class MainActivity : ComponentActivity() {
                 // Check if we are connected and if the token has expired
                 val authState = XpeApp.appModule.authenticationManager.authState.value
                 if (authState is com.xpeho.xpeapp.domain.AuthState.Authenticated) {
-                    // isAuthValid() automatically logs out if the token has expired
-                    XpeApp.appModule.authenticationManager.isAuthValid()
+                    if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
+                        XpeApp.appModule.authenticationManager.logout()
+                        withContext(Dispatchers.Main) {
+                            startScreenFlow.value = Screens.Login
+                        }
+                    }
                 }
             }
         }
@@ -88,8 +92,12 @@ class MainActivity : ComponentActivity() {
         if (connectedLastTime) {
             CoroutineScope(Dispatchers.IO).launch {
                 XpeApp.appModule.authenticationManager.restoreAuthStateFromStorage()
-                // Check validity after restoration (automatic logout if expired)
-                XpeApp.appModule.authenticationManager.isAuthValid()
+                if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
+                    XpeApp.appModule.authenticationManager.logout()
+                    withContext(Dispatchers.Main) {
+                        startScreenFlow.value = Screens.Login
+                    }
+                }
             }
         }
 
