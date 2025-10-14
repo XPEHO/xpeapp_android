@@ -29,6 +29,11 @@ class AuthenticationManager(
     val firebaseService: FirebaseService
 ) {
 
+    companion object {
+        private const val TOKEN_VALIDITY_DAYS = 5
+        private const val DAYS_TO_MILLISECONDS = 24 * 60 * 60 * 1000L
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     private val _authState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Unauthenticated)
 
@@ -75,12 +80,12 @@ class AuthenticationManager(
     private fun isTokenExpired(authData: AuthData): Boolean {
         val currentTime = System.currentTimeMillis()
         val tokenAge = currentTime - authData.tokenSavedTimestamp
-        val fiveDaysInMillis = 5 * 24 * 60 * 60 * 1000L // 5 days in milliseconds
+        val tokenValidityInMillis = TOKEN_VALIDITY_DAYS * DAYS_TO_MILLISECONDS
         
-        val ageInDays = tokenAge / (24 * 60 * 60 * 1000L)
+        val ageInDays = tokenAge / DAYS_TO_MILLISECONDS
         Log.d("AuthenticationManager", "Token age: $ageInDays days")
         
-        return tokenAge > fiveDaysInMillis
+        return tokenAge > tokenValidityInMillis
     }
 
     fun getAuthData(): AuthData? {

@@ -1,5 +1,6 @@
 package com.xpeho.xpeapp.ui.viewModel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,7 +30,17 @@ class WordpressViewModel(
             kotlinx.coroutines.runBlocking {
                 XpeApp.appModule.datastorePref.getLastEmail() ?: ""
             }
-        } catch (e: Exception) {
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Coroutine was cancelled, this is expected behavior
+            Log.d("WordpressViewModel: getLastEmailSync", "Coroutine cancelled: ${e.message}")
+            ""
+        } catch (e: IllegalStateException) {
+            // DataStore access issue or coroutine scope issue
+            Log.w("WordpressViewModel: getLastEmailSync", "IllegalStateException: ${e.message}")
+            ""
+        } catch (e: RuntimeException) {
+            // Other runtime issues (like uninitialized DataStore)
+            Log.e("WordpressViewModel: getLastEmailSync", "RuntimeException: ${e.message}")
             ""
         }
     }

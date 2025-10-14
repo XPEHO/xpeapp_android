@@ -35,6 +35,11 @@ import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
 
+    companion object {
+        private const val TOKEN_CHECK_INTERVAL_HOURS = 8
+        private const val HOURS_TO_MILLISECONDS = 60 * 60 * 1000L
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -68,7 +73,7 @@ class MainActivity : ComponentActivity() {
         // Periodic check for token expiration (every 8 hours)
         CoroutineScope(Dispatchers.IO).launch {
             while (true) {
-                kotlinx.coroutines.delay(8 * 60 * 60 * 1000L) // 8 hours
+                kotlinx.coroutines.delay(TOKEN_CHECK_INTERVAL_HOURS * HOURS_TO_MILLISECONDS)
 
                 // Check if we are connected and if the token has expired
                 val authState = XpeApp.appModule.authenticationManager.authState.value
