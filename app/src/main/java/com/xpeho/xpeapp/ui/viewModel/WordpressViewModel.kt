@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.IOException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xpeho.xpeapp.XpeApp
@@ -12,6 +13,8 @@ import com.xpeho.xpeapp.data.model.AuthResult
 import com.xpeho.xpeapp.domain.AuthenticationManager
 import com.xpeho.xpeapp.ui.uiState.WordpressUiState
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
+import kotlin.coroutines.cancellation.CancellationException
 
 class WordpressViewModel(
     private var authManager: AuthenticationManager
@@ -30,17 +33,21 @@ class WordpressViewModel(
             kotlinx.coroutines.runBlocking {
                 XpeApp.appModule.datastorePref.getLastEmail() ?: ""
             }
-        } catch (e: kotlinx.coroutines.CancellationException) {
+        } catch (e: CancellationException) {
             // Coroutine was cancelled, this is expected behavior
             Log.d("WordpressViewModel: getLastEmailSync", "Coroutine cancelled: ${e.message}")
             ""
-        } catch (e: IllegalStateException) {
-            // DataStore access issue or coroutine scope issue
-            Log.w("WordpressViewModel: getLastEmailSync", "IllegalStateException: ${e.message}")
+        } catch (e: IOException) {
+            // DataStore file access issue
+            Log.e("WordpressViewModel: getLastEmailSync", "DataStore IO error: ${e.message}")
             ""
-        } catch (e: RuntimeException) {
-            // Other runtime issues (like uninitialized DataStore)
-            Log.e("WordpressViewModel: getLastEmailSync", "RuntimeException: ${e.message}")
+        } catch (e: SecurityException) {
+            // Permission denied for DataStore access
+            Log.e("WordpressViewModel: getLastEmailSync", "Permission denied: ${e.message}")
+            ""
+        } catch (e: SerializationException) {
+            // DataStore serialization/deserialization error
+            Log.e("WordpressViewModel: getLastEmailSync", "Serialization error: ${e.message}")
             ""
         }
     }
