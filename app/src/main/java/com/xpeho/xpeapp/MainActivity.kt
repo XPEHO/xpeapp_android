@@ -65,15 +65,29 @@ class MainActivity : ComponentActivity() {
         val startScreenFlow: MutableStateFlow<Screens> =
             MutableStateFlow(if (connectedLastTime) Screens.Home else Screens.Login)
 
+        // Vérification périodique de l'expiration du token (toutes les 30 secondes)
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                kotlinx.coroutines.delay(30_000) // 30 secondes
+                
+                // Vérifier si on est connecté et si le token a expiré
+                val authState = XpeApp.appModule.authenticationManager.authState.value
+                if (authState is com.xpeho.xpeapp.domain.AuthState.Authenticated) {
+                    if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
+                        // isAuthValid() fait automatiquement le logout si le token a expiré
+                        // Le changement d'état sera détecté par Home.kt pour la redirection
+                    }
+                }
+            }
+        }
+
         // If the user was connected last time, try to restore the authentication state.
         if (connectedLastTime) {
             CoroutineScope(Dispatchers.IO).launch {
                 XpeApp.appModule.authenticationManager.restoreAuthStateFromStorage()
                 if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
-                    XpeApp.appModule.authenticationManager.logout()
-                    withContext(Dispatchers.Main) {
-                        startScreenFlow.value = Screens.Login
-                    }
+                    // isAuthValid() fait déjà le logout si nécessaire
+                    // Home.kt gérera la redirection
                 }
             }
         }
