@@ -24,6 +24,7 @@ class DatastorePref(
         val CONNECT = stringPreferencesKey("isConnectedLeastOneTime")
         val AUTH_DATA = stringPreferencesKey("authData")
         val WAS_CONNECTED_LAST_TIME = stringPreferencesKey("wasConnectedLastTime")
+        val LAST_EMAIL = stringPreferencesKey("lastEmail")
     }
 
     val isConnectedLeastOneTime: Flow<Boolean> = context.dataStore.data
@@ -83,6 +84,20 @@ class DatastorePref(
     suspend fun getWasConnectedLastTime(): Boolean {
         return context.dataStore.data.map { preferences ->
             preferences[WAS_CONNECTED_LAST_TIME]?.toBoolean() ?: false
+        }.first()
+    }
+
+    // Last email persistence
+
+    suspend fun setLastEmail(email: String) {
+        context.dataStore.edit { preference ->
+            preference[LAST_EMAIL] = email
+        }
+    }
+
+    suspend fun getLastEmail(): String? {
+        return context.dataStore.data.map { preferences ->
+            preferences[LAST_EMAIL]
         }.first()
     }
 }

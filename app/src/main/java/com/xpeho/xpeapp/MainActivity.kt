@@ -3,7 +3,6 @@ package com.xpeho.xpeapp
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -32,6 +31,7 @@ import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
 
@@ -65,18 +65,16 @@ class MainActivity : ComponentActivity() {
         val startScreenFlow: MutableStateFlow<Screens> =
             MutableStateFlow(if (connectedLastTime) Screens.Home else Screens.Login)
 
-        // Vérification périodique de l'expiration du token (toutes les 30 secondes)
+        // Periodic check for token expiration (every 8 hours)
         CoroutineScope(Dispatchers.IO).launch {
             while (true) {
-                kotlinx.coroutines.delay(30_000) // 30 secondes
-                
-                // Vérifier si on est connecté et si le token a expiré
+                kotlinx.coroutines.delay(8 * 60 * 60 * 1000L) // 8 hours
+
+                // Check if we are connected and if the token has expired
                 val authState = XpeApp.appModule.authenticationManager.authState.value
                 if (authState is com.xpeho.xpeapp.domain.AuthState.Authenticated) {
-                    if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
-                        // isAuthValid() fait automatiquement le logout si le token a expiré
-                        // Le changement d'état sera détecté par Home.kt pour la redirection
-                    }
+                    // isAuthValid() automatically logs out if the token has expired
+                    XpeApp.appModule.authenticationManager.isAuthValid()
                 }
             }
         }
@@ -85,10 +83,8 @@ class MainActivity : ComponentActivity() {
         if (connectedLastTime) {
             CoroutineScope(Dispatchers.IO).launch {
                 XpeApp.appModule.authenticationManager.restoreAuthStateFromStorage()
-                if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
-                    // isAuthValid() fait déjà le logout si nécessaire
-                    // Home.kt gérera la redirection
-                }
+                // Check validity after restoration (automatic logout if expired)
+                XpeApp.appModule.authenticationManager.isAuthValid()
             }
         }
 
@@ -159,7 +155,7 @@ class MainActivity : ComponentActivity() {
             .setCancelable(false)
             .setPositiveButton(getString(R.string.force_update_popup_button_label)) { _, _ ->
                 val intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse("market://details?id=$packageName")
+                    data = "market://details?id=$packageName".toUri()
                     setPackage("com.android.vending")
                 }
                 startActivity(intent)
@@ -181,7 +177,7 @@ class MainActivity : ComponentActivity() {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-                val jsonResponse = JSONObject(response.body?.string() ?: "")
+                val jsonResponse = JSONObject(response.body.string())
                 jsonResponse.getString("tag_name")
             }
         }

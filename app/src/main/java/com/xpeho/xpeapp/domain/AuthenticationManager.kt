@@ -36,12 +36,12 @@ class AuthenticationManager(
 
     fun restoreAuthStateFromStorage() = runBlocking {
         datastorePref.getAuthData()?.let { authData ->
-            // Vérifier si le token n'a pas expiré avant de restaurer l'état
+            // Verify if the token has expired (5 days)
             if (isTokenExpired(authData)) {
-                // Le token a expiré, effectuer un logout
+                // The token has expired, perform logout
                 logout()
             } else {
-                // Le token est encore valide, restaurer l'état d'authentification
+                // The token is still valid, restore the authenticated state
                 _authState.value = AuthState.Authenticated(authData)
                 tokenProvider.set("Bearer ${authData.token.token}")
             }
@@ -52,7 +52,7 @@ class AuthenticationManager(
         return when (val authState = this.authState.value) {
             is AuthState.Unauthenticated -> false
             is AuthState.Authenticated -> {
-                // Vérifier d'abord si le token n'a pas expiré (5 jours)
+                // Verify if the token has expired (5 days)
                 if (isTokenExpired(authState.authData)) {
                     logout()
                     return false
@@ -67,19 +67,20 @@ class AuthenticationManager(
     }
 
     /**
-     * Vérifie si le token a expiré (plus de 5 jours)
-     * @param authData Les données d'authentification contenant le timestamp de sauvegarde
-     * @return true si le token a expiré, false sinon
+     * Verify if the token has expired.
+     * A token is considered expired if it is older than 5 days.
+     * @param authData: The authentication data containing the token and its saved timestamp.
+     * @return True if the token has expired, false otherwise.
      */
     private fun isTokenExpired(authData: AuthData): Boolean {
         val currentTime = System.currentTimeMillis()
         val tokenAge = currentTime - authData.tokenSavedTimestamp
-        val fiveMinutesInMillis = 5 * 60 * 1000L // 5 minutes pour les tests
+        val fiveDaysInMillis = 5 * 24 * 60 * 60 * 1000L // 5 days in milliseconds
         
-        val ageInMinutes = tokenAge / (60 * 1000L)
-        Log.d("AuthenticationManager", "Token age: $ageInMinutes minutes")
+        val ageInDays = tokenAge / (24 * 60 * 60 * 1000L)
+        Log.d("AuthenticationManager", "Token age: $ageInDays days")
         
-        return tokenAge > fiveMinutesInMillis
+        return tokenAge > fiveDaysInMillis
     }
 
     fun getAuthData(): AuthData? {
@@ -133,6 +134,7 @@ class AuthenticationManager(
         datastorePref.setAuthData(authData)
         datastorePref.setIsConnectedLeastOneTime(true)
         datastorePref.setWasConnectedLastTime(true)
+        datastorePref.setLastEmail(username)
         wordpressUid?.let { datastorePref.setUserId(it) }
     }
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.model.AuthResult
 import com.xpeho.xpeapp.domain.AuthenticationManager
@@ -16,12 +17,22 @@ class WordpressViewModel(
 ) : ViewModel() {
 
     var body: AuthentificationBody? by mutableStateOf(null)
-    var usernameInput: String by mutableStateOf("")
+    var usernameInput: String by mutableStateOf(getLastEmailSync())
     var passwordInput: String by mutableStateOf("")
     var usernameInError: Boolean by mutableStateOf(false)
     var passwordInError: Boolean by mutableStateOf(false)
 
     var wordpressState: WordpressUiState by mutableStateOf(WordpressUiState.EMPTY)
+
+    private fun getLastEmailSync(): String {
+        return try {
+            kotlinx.coroutines.runBlocking {
+                XpeApp.appModule.datastorePref.getLastEmail() ?: ""
+            }
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
     fun onLogin() {
         viewModelScope.launch {

@@ -21,7 +21,7 @@ private const val NAV_ANIM_DURATION_MILLIS = 300
 fun Home(startScreen: Screens) {
     val navigationController = rememberNavController()
 
-    // Observer l'état d'authentification pour redirection automatique
+    // Observe the authentication state to handle navigation accordingly.
     val authState = XpeApp.appModule.authenticationManager.authState.collectAsStateWithLifecycle()
     
     LaunchedEffect(authState.value) {
