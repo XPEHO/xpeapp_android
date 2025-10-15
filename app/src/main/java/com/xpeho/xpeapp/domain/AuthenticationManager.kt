@@ -14,6 +14,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Singleton responsible for keeping track of the authentication state,
@@ -29,15 +31,26 @@ class AuthenticationManager(
     val firebaseService: FirebaseService
 ) {
 
+    companion object {
+        private val TOKEN_VALIDITY_PERIOD = 5.days
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     private val _authState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Unauthenticated)
 
     val authState = _authState.asStateFlow()
 
     fun restoreAuthStateFromStorage() = runBlocking {
-        datastorePref.getAuthData()?.let {
-            _authState.value = AuthState.Authenticated(it)
-            tokenProvider.set("Bearer ${it.token.token}")
+        datastorePref.getAuthData()?.let { authData ->
+            // Verify if the token has expired (5 days)
+            if (isTokenExpired(authData)) {
+                // The token has expired, perform logout
+                logout()
+            } else {
+                // The token is still valid, restore the authenticated state
+                _authState.value = AuthState.Authenticated(authData)
+                tokenProvider.set("Bearer ${authData.token.token}")
+            }
         }
     }
 
@@ -45,6 +58,12 @@ class AuthenticationManager(
         return when (val authState = this.authState.value) {
             is AuthState.Unauthenticated -> false
             is AuthState.Authenticated -> {
+                // Verify if the token has expired (5 days)
+                if (isTokenExpired(authState.authData)) {
+                    logout()
+                    return false
+                }
+                
                 // Note(loucas): Order of operations here is important,
                 // lazy `&&` evalutation makes this faster
                 firebaseService.isAuthenticated()
@@ -53,11 +72,23 @@ class AuthenticationManager(
         }
     }
 
-    fun getAuthData(): AuthData? {
-        return when (val authState = this.authState.value) {
-            is AuthState.Authenticated -> authState.authData
-            else -> null
-        }
+    /**
+     * Verify if the token has expired.
+     * A token is considered expired if it is older than 5 days.
+     * @param authData: The authentication data containing the token and its saved timestamp.
+     * @return True if the token has expired, false otherwise.
+     */
+    private fun isTokenExpired(authData: AuthData): Boolean {
+        val tokenAge = (System.currentTimeMillis() - authData.tokenSavedTimestamp).milliseconds
+        
+        Log.d("AuthenticationManager", "Token age: ${tokenAge.inWholeDays} days")
+        
+        return tokenAge > TOKEN_VALIDITY_PERIOD
+    }
+
+    fun getAuthData(): AuthData? = when (val authState = this.authState.value) {
+        is AuthState.Authenticated -> authState.authData
+        is AuthState.Unauthenticated -> null
     }
 
     suspend fun login(username: String, password: String): AuthResult<WordpressToken> = coroutineScope {
@@ -104,6 +135,7 @@ class AuthenticationManager(
         datastorePref.setAuthData(authData)
         datastorePref.setIsConnectedLeastOneTime(true)
         datastorePref.setWasConnectedLastTime(true)
+        datastorePref.setLastEmail(username)
         wordpressUid?.let { datastorePref.setUserId(it) }
     }
 
@@ -120,4 +152,8 @@ sealed interface AuthState {
     data class Authenticated(val authData: AuthData) : AuthState
 }
 
-data class AuthData(val username: String, val token: WordpressToken)
+data class AuthData(
+    val username: String, 
+    val token: WordpressToken,
+    val tokenSavedTimestamp: Long = System.currentTimeMillis()
+)

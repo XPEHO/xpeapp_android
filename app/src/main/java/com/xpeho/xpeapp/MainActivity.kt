@@ -3,7 +3,6 @@ package com.xpeho.xpeapp
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -32,8 +31,14 @@ import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
+import kotlin.time.Duration.Companion.hours
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        private val TOKEN_CHECK_INTERVAL = 8.hours
+    }
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -64,6 +69,24 @@ class MainActivity : ComponentActivity() {
         }
         val startScreenFlow: MutableStateFlow<Screens> =
             MutableStateFlow(if (connectedLastTime) Screens.Home else Screens.Login)
+
+        // Periodic check for token expiration (every 8 hours)
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                kotlinx.coroutines.delay(TOKEN_CHECK_INTERVAL.inWholeMilliseconds)
+
+                // Check if we are connected and if the token has expired
+                val authState = XpeApp.appModule.authenticationManager.authState.value
+                if (authState is com.xpeho.xpeapp.domain.AuthState.Authenticated) {
+                    if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
+                        XpeApp.appModule.authenticationManager.logout()
+                        withContext(Dispatchers.Main) {
+                            startScreenFlow.value = Screens.Login
+                        }
+                    }
+                }
+            }
+        }
 
         // If the user was connected last time, try to restore the authentication state.
         if (connectedLastTime) {
@@ -145,7 +168,7 @@ class MainActivity : ComponentActivity() {
             .setCancelable(false)
             .setPositiveButton(getString(R.string.force_update_popup_button_label)) { _, _ ->
                 val intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse("market://details?id=$packageName")
+                    data = "market://details?id=$packageName".toUri()
                     setPackage("com.android.vending")
                 }
                 startActivity(intent)
@@ -167,7 +190,7 @@ class MainActivity : ComponentActivity() {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-                val jsonResponse = JSONObject(response.body?.string() ?: "")
+                val jsonResponse = JSONObject(response.body.string())
                 jsonResponse.getString("tag_name")
             }
         }

@@ -1,27 +1,59 @@
 package com.xpeho.xpeapp.ui.viewModel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.IOException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.model.AuthResult
 import com.xpeho.xpeapp.domain.AuthenticationManager
 import com.xpeho.xpeapp.ui.uiState.WordpressUiState
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
+import kotlin.coroutines.cancellation.CancellationException
 
 class WordpressViewModel(
     private var authManager: AuthenticationManager
 ) : ViewModel() {
 
     var body: AuthentificationBody? by mutableStateOf(null)
-    var usernameInput: String by mutableStateOf("")
+    var usernameInput: String by mutableStateOf(getLastEmailSync())
     var passwordInput: String by mutableStateOf("")
     var usernameInError: Boolean by mutableStateOf(false)
     var passwordInError: Boolean by mutableStateOf(false)
 
     var wordpressState: WordpressUiState by mutableStateOf(WordpressUiState.EMPTY)
+
+    private fun getLastEmailSync(): String {
+        return runCatching {
+            kotlinx.coroutines.runBlocking {
+                XpeApp.appModule.datastorePref.getLastEmail() ?: ""
+            }
+        }.getOrElse { throwable ->
+            when (throwable) {
+                is CancellationException -> {
+                    Log.d("WordpressViewModel", "Coroutine cancelled: ${throwable.message}")
+                }
+                is IOException -> {
+                    Log.e("WordpressViewModel", "DataStore IO error: ${throwable.message}")
+                }
+                is SecurityException -> {
+                    Log.e("WordpressViewModel", "Permission denied: ${throwable.message}")
+                }
+                is SerializationException -> {
+                    Log.e("WordpressViewModel", "Serialization error: ${throwable.message}")
+                }
+                else -> {
+                    Log.e("WordpressViewModel", "Unexpected error: ${throwable.message}")
+                }
+            }
+            ""
+        }
+    }
 
     fun onLogin() {
         viewModelScope.launch {
