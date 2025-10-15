@@ -14,6 +14,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration.Companion.days
 
 /**
  * Singleton responsible for keeping track of the authentication state,
@@ -30,8 +31,7 @@ class AuthenticationManager(
 ) {
 
     companion object {
-        private const val TOKEN_VALIDITY_DAYS = 5
-        private const val DAYS_TO_MILLISECONDS = 24 * 60 * 60 * 1000L
+        private val TOKEN_VALIDITY_PERIOD = 5.days
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -80,12 +80,11 @@ class AuthenticationManager(
     private fun isTokenExpired(authData: AuthData): Boolean {
         val currentTime = System.currentTimeMillis()
         val tokenAge = currentTime - authData.tokenSavedTimestamp
-        val tokenValidityInMillis = TOKEN_VALIDITY_DAYS * DAYS_TO_MILLISECONDS
         
-        val ageInDays = tokenAge / DAYS_TO_MILLISECONDS
+        val ageInDays = tokenAge / TOKEN_VALIDITY_PERIOD.inWholeMilliseconds
         Log.d("AuthenticationManager", "Token age: $ageInDays days")
         
-        return tokenAge > tokenValidityInMillis
+        return tokenAge > TOKEN_VALIDITY_PERIOD.inWholeMilliseconds
     }
 
     fun getAuthData(): AuthData? {

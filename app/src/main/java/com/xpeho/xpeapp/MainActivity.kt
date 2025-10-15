@@ -31,13 +31,14 @@ import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
 
     companion object {
-        private const val TOKEN_CHECK_INTERVAL_HOURS = 8
-        private const val HOURS_TO_MILLISECONDS = 60 * 60 * 1000L
+        private val TOKEN_CHECK_INTERVAL = 8.hours
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -73,7 +74,7 @@ class MainActivity : ComponentActivity() {
         // Periodic check for token expiration (every 8 hours)
         CoroutineScope(Dispatchers.IO).launch {
             while (true) {
-                kotlinx.coroutines.delay(TOKEN_CHECK_INTERVAL_HOURS * HOURS_TO_MILLISECONDS)
+                kotlinx.coroutines.delay(TOKEN_CHECK_INTERVAL.inWholeMilliseconds)
 
                 // Check if we are connected and if the token has expired
                 val authState = XpeApp.appModule.authenticationManager.authState.value
