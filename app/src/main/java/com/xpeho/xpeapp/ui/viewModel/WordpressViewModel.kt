@@ -29,25 +29,28 @@ class WordpressViewModel(
     var wordpressState: WordpressUiState by mutableStateOf(WordpressUiState.EMPTY)
 
     private fun getLastEmailSync(): String {
-        return try {
+        return runCatching {
             kotlinx.coroutines.runBlocking {
                 XpeApp.appModule.datastorePref.getLastEmail() ?: ""
             }
-        } catch (e: CancellationException) {
-            // Coroutine was cancelled, this is expected behavior
-            Log.d("WordpressViewModel: getLastEmailSync", "Coroutine cancelled: ${e.message}")
-            ""
-        } catch (e: IOException) {
-            // DataStore file access issue
-            Log.e("WordpressViewModel: getLastEmailSync", "DataStore IO error: ${e.message}")
-            ""
-        } catch (e: SecurityException) {
-            // Permission denied for DataStore access
-            Log.e("WordpressViewModel: getLastEmailSync", "Permission denied: ${e.message}")
-            ""
-        } catch (e: SerializationException) {
-            // DataStore serialization/deserialization error
-            Log.e("WordpressViewModel: getLastEmailSync", "Serialization error: ${e.message}")
+        }.getOrElse { throwable ->
+            when (throwable) {
+                is CancellationException -> {
+                    Log.d("WordpressViewModel", "Coroutine cancelled: ${throwable.message}")
+                }
+                is IOException -> {
+                    Log.e("WordpressViewModel", "DataStore IO error: ${throwable.message}")
+                }
+                is SecurityException -> {
+                    Log.e("WordpressViewModel", "Permission denied: ${throwable.message}")
+                }
+                is SerializationException -> {
+                    Log.e("WordpressViewModel", "Serialization error: ${throwable.message}")
+                }
+                else -> {
+                    Log.e("WordpressViewModel", "Unexpected error: ${throwable.message}")
+                }
+            }
             ""
         }
     }

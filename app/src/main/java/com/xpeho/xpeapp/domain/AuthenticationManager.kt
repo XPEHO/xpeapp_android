@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Singleton responsible for keeping track of the authentication state,
@@ -78,20 +79,16 @@ class AuthenticationManager(
      * @return True if the token has expired, false otherwise.
      */
     private fun isTokenExpired(authData: AuthData): Boolean {
-        val currentTime = System.currentTimeMillis()
-        val tokenAge = currentTime - authData.tokenSavedTimestamp
+        val tokenAge = (System.currentTimeMillis() - authData.tokenSavedTimestamp).milliseconds
         
-        val ageInDays = tokenAge / TOKEN_VALIDITY_PERIOD.inWholeMilliseconds
-        Log.d("AuthenticationManager", "Token age: $ageInDays days")
+        Log.d("AuthenticationManager", "Token age: ${tokenAge.inWholeDays} days")
         
-        return tokenAge > TOKEN_VALIDITY_PERIOD.inWholeMilliseconds
+        return tokenAge > TOKEN_VALIDITY_PERIOD
     }
 
-    fun getAuthData(): AuthData? {
-        return when (val authState = this.authState.value) {
-            is AuthState.Authenticated -> authState.authData
-            else -> null
-        }
+    fun getAuthData(): AuthData? = when (val authState = this.authState.value) {
+        is AuthState.Authenticated -> authState.authData
+        is AuthState.Unauthenticated -> null
     }
 
     suspend fun login(username: String, password: String): AuthResult<WordpressToken> = coroutineScope {

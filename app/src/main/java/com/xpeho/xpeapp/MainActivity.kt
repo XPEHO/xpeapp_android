@@ -32,7 +32,6 @@ import org.json.JSONObject
 import java.io.IOException
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.milliseconds
 import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
