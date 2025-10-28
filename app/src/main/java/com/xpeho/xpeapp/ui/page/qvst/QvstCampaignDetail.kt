@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -166,6 +167,7 @@ fun QvstCampaignDetailPage(
                             modifier = Modifier
                                 .padding(bottom = 10.dp, top = 5.dp)
                                 .fillMaxWidth()
+                                .safeDrawingPadding()
                         ) {
                             // Previous button
                             Icon(
@@ -177,7 +179,6 @@ fun QvstCampaignDetailPage(
                                     XpehoColors.DISABLED_COLOR
                                 },
                                 modifier = Modifier
-                                    .padding(24.dp) // Increase touch area
                                     .clickable(onClick = {
                                         if (currentQuestionIndex.value > 0) {
                                             currentQuestionIndex.value -= 1
@@ -208,7 +209,6 @@ fun QvstCampaignDetailPage(
                                     XpehoColors.DISABLED_COLOR
                                 },
                                 modifier = Modifier
-                                    .padding(24.dp) // Increase touch area
                                     .size(
                                         if (currentQuestionIndex.value < questions.size) {
                                             24.dp
