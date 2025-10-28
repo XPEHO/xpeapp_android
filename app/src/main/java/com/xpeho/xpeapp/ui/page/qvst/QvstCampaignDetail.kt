@@ -177,7 +177,7 @@ fun QvstCampaignDetailPage(
                                     XpehoColors.DISABLED_COLOR
                                 },
                                 modifier = Modifier
-                                    .padding(24.dp)
+                                    .padding(24.dp) // Increase touch area
                                     .clickable(onClick = {
                                         if (currentQuestionIndex.value > 0) {
                                             currentQuestionIndex.value -= 1
@@ -208,7 +208,7 @@ fun QvstCampaignDetailPage(
                                     XpehoColors.DISABLED_COLOR
                                 },
                                 modifier = Modifier
-                                    .padding(24.dp)
+                                    .padding(24.dp) // Increase touch area
                                     .size(
                                         if (currentQuestionIndex.value < questions.size) {
                                             24.dp
