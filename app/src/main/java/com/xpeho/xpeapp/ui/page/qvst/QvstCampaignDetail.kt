@@ -177,6 +177,7 @@ fun QvstCampaignDetailPage(
                                     XpehoColors.DISABLED_COLOR
                                 },
                                 modifier = Modifier
+                                    .padding(24.dp)
                                     .clickable(onClick = {
                                         if (currentQuestionIndex.value > 0) {
                                             currentQuestionIndex.value -= 1
@@ -207,6 +208,7 @@ fun QvstCampaignDetailPage(
                                     XpehoColors.DISABLED_COLOR
                                 },
                                 modifier = Modifier
+                                    .padding(24.dp)
                                     .size(
                                         if (currentQuestionIndex.value < questions.size) {
                                             24.dp
