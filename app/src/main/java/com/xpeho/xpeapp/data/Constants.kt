@@ -12,4 +12,5 @@ enum class FeatureFlippingEnum(val value: String) {
     QVST("campaign"),
     PROFILE("profile"),
     AGENDA("agenda"),
+    IDEABOX("ideaBox")
 }

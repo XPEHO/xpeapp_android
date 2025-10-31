@@ -2,6 +2,7 @@ package com.xpeho.xpeapp.data.service
 
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.entity.QvstAnswerBody
+import com.xpeho.xpeapp.data.model.ideaBox.IdeaSubmission
 import com.xpeho.xpeapp.data.entity.user.UserEditPassword
 import com.xpeho.xpeapp.data.model.user.UserInfos
 import com.xpeho.xpeapp.data.model.WordpressToken
@@ -113,4 +114,11 @@ interface WordpressService {
     suspend fun fetchImageStorage(
         @Path("imageName", encoded = true) imageName: String,
     ): Response<okhttp3.ResponseBody>
+
+    // Idea Box Feature
+    @Headers("Content-Type: application/json")
+    @POST("xpeho/v1/ideas")
+    suspend fun submitIdea(
+        @Body userIdeaSubmission: IdeaSubmission
+    ): Response<Unit>
 }
