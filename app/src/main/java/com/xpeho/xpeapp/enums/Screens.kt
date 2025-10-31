@@ -9,5 +9,6 @@ enum class Screens {
     Qvst,
     Profile,
     Agenda,
-    Agency
+    Agency,
+    IdeaBox
 }

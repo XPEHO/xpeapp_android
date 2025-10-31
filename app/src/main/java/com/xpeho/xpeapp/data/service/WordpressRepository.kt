@@ -12,6 +12,7 @@ import com.xpeho.xpeapp.data.model.WordpressToken
 import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
 import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
 import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
+import com.xpeho.xpeapp.data.model.ideaBox.IdeaSubmission
 import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
 import com.xpeho.xpeapp.data.model.qvst.QvstQuestion
@@ -340,6 +341,24 @@ class WordpressRepository(
             catchBody = { e ->
                 Log.e("WordpressRepository: getImage", "Network error: ${e.message}")
                 null
+            }
+        )
+    }
+
+    // Idea Box features methods
+    // submitIdeas
+
+    suspend fun submitIdea(
+        userIdeaSubmission: IdeaSubmission
+    ): Boolean {
+        handleServiceExceptions(
+            tryBody = {
+                api.submitIdea(userIdeaSubmission)
+                return true
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: submitIdea", "Network error: ${e.message}")
+                return false
             }
         )
     }
