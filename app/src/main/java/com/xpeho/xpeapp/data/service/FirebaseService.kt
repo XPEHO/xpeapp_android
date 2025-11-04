@@ -9,20 +9,38 @@ import com.xpeho.xpeapp.data.NEWSLETTERS_COLLECTION
 import com.xpeho.xpeapp.data.model.FeatureFlipping
 import com.xpeho.xpeapp.data.model.Newsletter
 import com.xpeho.xpeapp.data.model.toFeatureFlipping
+import com.xpeho.xpeapp.utils.CrashlyticsUtils
 import kotlinx.coroutines.tasks.await
 import java.time.ZoneId
 
 class FirebaseService {
     suspend fun authenticate() {
-        FirebaseAuth.getInstance().signInAnonymously().await()
+        try {
+            CrashlyticsUtils.logEvent("Firebase: Tentative d'authentification anonyme")
+            FirebaseAuth.getInstance().signInAnonymously().await()
+            CrashlyticsUtils.logEvent("Firebase: Authentification anonyme réussie")
+        } catch (e: Exception) {
+            CrashlyticsUtils.logEvent("Firebase: Erreur d'authentification anonyme")
+            CrashlyticsUtils.recordException(e)
+            throw e
+        }
     }
 
     fun isAuthenticated() = FirebaseAuth.getInstance().currentUser != null
 
-    fun signOut() = FirebaseAuth.getInstance().signOut()
+    fun signOut() {
+        try {
+            CrashlyticsUtils.logEvent("Firebase: Déconnexion")
+            FirebaseAuth.getInstance().signOut()
+        } catch (e: Exception) {
+            CrashlyticsUtils.recordException(e)
+            throw e
+        }
+    }
 
     suspend fun fetchFeatureFlipping(): List<FeatureFlipping> {
         try {
+            CrashlyticsUtils.logEvent("Firebase: Récupération des feature flags")
             val db = FirebaseFirestore.getInstance()
             val document = db.collection(FEATURE_FLIPPING_COLLECTION)
                 .get()
@@ -37,9 +55,12 @@ class FirebaseService {
                     featureFlippingList[featureFlippingList.indexOf(featureFlipping)] = featureFlipping
                 }
             }
+            CrashlyticsUtils.logEvent("Firebase: Feature flags récupérés avec succès (${featureFlippingList.size} éléments)")
             return featureFlippingList
         } catch (firebaseException: FirebaseException) {
             Log.e("fetchFeatureFlipping", "Error getting documents: $firebaseException")
+            CrashlyticsUtils.logEvent("Firebase: Erreur lors de la récupération des feature flags")
+            CrashlyticsUtils.recordException(firebaseException)
             return emptyList()
         }
     }
@@ -50,6 +71,7 @@ class FirebaseService {
         val defaultSystemOfZone = ZoneId.systemDefault()
 
         try {
+            CrashlyticsUtils.logEvent("Firebase: Récupération des newsletters")
             db.collection(NEWSLETTERS_COLLECTION)
                 .get()
                 .await()
@@ -73,8 +95,11 @@ class FirebaseService {
                     )
                     newslettersList.add(newsletter)
                 }
+            CrashlyticsUtils.logEvent("Firebase: Newsletters récupérées avec succès (${newslettersList.size} éléments)")
         } catch (firebaseException: FirebaseException) {
             Log.d("fetchNewsletters", "Error getting documents: ", firebaseException)
+            CrashlyticsUtils.logEvent("Firebase: Erreur lors de la récupération des newsletters")
+            CrashlyticsUtils.recordException(firebaseException)
         }
 
         return newslettersList.sortedByDescending { it.date }
