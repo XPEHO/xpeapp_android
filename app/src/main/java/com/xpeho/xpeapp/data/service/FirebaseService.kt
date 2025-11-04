@@ -19,7 +19,7 @@ class FirebaseService {
             CrashlyticsUtils.logEvent("Firebase: Tentative d'authentification anonyme")
             FirebaseAuth.getInstance().signInAnonymously().await()
             CrashlyticsUtils.logEvent("Firebase: Authentification anonyme réussie")
-        } catch (e: Exception) {
+        } catch (e: FirebaseException) {
             CrashlyticsUtils.logEvent("Firebase: Erreur d'authentification anonyme")
             CrashlyticsUtils.recordException(e)
             throw e
@@ -32,7 +32,7 @@ class FirebaseService {
         try {
             CrashlyticsUtils.logEvent("Firebase: Déconnexion")
             FirebaseAuth.getInstance().signOut()
-        } catch (e: Exception) {
+        } catch (e: FirebaseException) {
             CrashlyticsUtils.recordException(e)
             throw e
         }
@@ -55,11 +55,13 @@ class FirebaseService {
                     featureFlippingList[featureFlippingList.indexOf(featureFlipping)] = featureFlipping
                 }
             }
-            CrashlyticsUtils.logEvent("Firebase: Feature flags récupérés avec succès (${featureFlippingList.size} éléments)")
+            CrashlyticsUtils.logEvent("Firebase: Feature flags " +
+                    "récupérés avec succès (${featureFlippingList.size} éléments)")
             return featureFlippingList
         } catch (firebaseException: FirebaseException) {
             Log.e("fetchFeatureFlipping", "Error getting documents: $firebaseException")
-            CrashlyticsUtils.logEvent("Firebase: Erreur lors de la récupération des feature flags")
+            CrashlyticsUtils.logEvent("Firebase: Erreur lors " +
+                    "de la récupération des feature flags")
             CrashlyticsUtils.recordException(firebaseException)
             return emptyList()
         }
@@ -95,10 +97,12 @@ class FirebaseService {
                     )
                     newslettersList.add(newsletter)
                 }
-            CrashlyticsUtils.logEvent("Firebase: Newsletters récupérées avec succès (${newslettersList.size} éléments)")
+            CrashlyticsUtils.logEvent("Firebase: Newsletters " +
+                    "récupérées avec succès (${newslettersList.size} éléments)")
         } catch (firebaseException: FirebaseException) {
             Log.d("fetchNewsletters", "Error getting documents: ", firebaseException)
-            CrashlyticsUtils.logEvent("Firebase: Erreur lors de la récupération des newsletters")
+            CrashlyticsUtils.logEvent("Firebase: Erreur lors de " +
+                    "la récupération des newsletters")
             CrashlyticsUtils.recordException(firebaseException)
         }
 

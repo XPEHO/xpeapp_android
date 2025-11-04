@@ -42,7 +42,8 @@ class FeatureFlippingManager(
     }
 
     private suspend fun fetchData() {
-        CrashlyticsUtils.logEvent("FeatureFlipping: Récupération des feature flags")
+        CrashlyticsUtils.logEvent("FeatureFlipping: " +
+                "Récupération des feature flags")
         val featureFlippingList = try {
             firebaseService.fetchFeatureFlipping()
         } catch (e: IOException) {
@@ -67,7 +68,8 @@ class FeatureFlippingManager(
             }
         }
 
-        CrashlyticsUtils.logEvent("FeatureFlipping: Configuration chargée avec succès (${featureEnabled.size} features)")
+        CrashlyticsUtils.logEvent("FeatureFlipping: Configuration " +
+                "chargée avec succès (${featureEnabled.size} features)")
         CrashlyticsUtils.setCustomKey("feature_flags_loaded", featureEnabled.size.toString())
         _featuresState.value = FeatureFlippingState.SUCCESS(featureEnabled.toMap())
     }
