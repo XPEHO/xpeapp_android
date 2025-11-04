@@ -33,7 +33,6 @@ import com.xpeho.xpeapp.ui.sendAnalyticsEvent
 import com.xpeho.xpeapp.ui.uiState.WordpressUiState
 import com.xpeho.xpeapp.ui.viewModel.WordpressViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
-import com.xpeho.xpeapp.utils.CrashlyticsUtils
 import com.xpeho.xpeho_ui_android.ClickyButton
 import com.xpeho.xpeho_ui_android.InputText
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors

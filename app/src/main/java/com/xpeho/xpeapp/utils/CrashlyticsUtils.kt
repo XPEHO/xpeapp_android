@@ -56,11 +56,4 @@ object CrashlyticsUtils {
             FirebaseCrashlytics.getInstance().setCustomKey("user_role", userRole)
         }
     }
-    
-    /**
-     * Force un crash pour tester Crashlytics (à utiliser uniquement en test !)
-     */
-    fun testCrash() {
-        throw RuntimeException("Test crash pour Crashlytics")
-    }
 }
