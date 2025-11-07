@@ -3,7 +3,6 @@ package com.xpeho.xpeapp.di
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.GsonBuilder
-import com.google.type.DateTime
 import com.xpeho.xpeapp.BuildConfig
 import com.xpeho.xpeapp.data.DatastorePref
 import com.xpeho.xpeapp.data.dateConverter.DateTimeTypeAdapter
@@ -42,7 +41,7 @@ class MainAppModule(
         // Register custom date format for Date and DateTime
         .registerTypeAdapter(Date::class.java, DateTypeAdapter())
         .registerTypeAdapter(LocalTime::class.java, DateTimeTypeAdapter())
-        .setLenient().create()
+        .create()
 
     private val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
     private val authorization by lazy {
@@ -111,5 +110,3 @@ class MainAppModule(
         )
     }
 }
-
-

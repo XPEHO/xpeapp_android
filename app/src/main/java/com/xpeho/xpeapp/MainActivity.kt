@@ -21,7 +21,7 @@ import com.xpeho.xpeapp.ui.Home
 import com.xpeho.xpeapp.ui.notifications.AlarmScheduler
 import com.xpeho.xpeapp.ui.theme.XpeAppTheme
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.xpeho.xpeapp.utils.DefaultDispatcherProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -71,18 +71,18 @@ class MainActivity : ComponentActivity() {
             MutableStateFlow(if (connectedLastTime) Screens.Home else Screens.Login)
 
         // Periodic check for token expiration (every 8 hours)
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(DefaultDispatcherProvider.io).launch {
             while (true) {
                 kotlinx.coroutines.delay(TOKEN_CHECK_INTERVAL.inWholeMilliseconds)
 
                 // Check if we are connected and if the token has expired
                 val authState = XpeApp.appModule.authenticationManager.authState.value
-                if (authState is com.xpeho.xpeapp.domain.AuthState.Authenticated) {
-                    if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
-                        XpeApp.appModule.authenticationManager.logout()
-                        withContext(Dispatchers.Main) {
-                            startScreenFlow.value = Screens.Login
-                        }
+                if (authState is com.xpeho.xpeapp.domain.AuthState.Authenticated &&
+                    !XpeApp.appModule.authenticationManager.isAuthValid()
+                ) {
+                    XpeApp.appModule.authenticationManager.logout()
+                    withContext(DefaultDispatcherProvider.main) {
+                        startScreenFlow.value = Screens.Login
                     }
                 }
             }
@@ -90,11 +90,11 @@ class MainActivity : ComponentActivity() {
 
         // If the user was connected last time, try to restore the authentication state.
         if (connectedLastTime) {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(DefaultDispatcherProvider.io).launch {
                 XpeApp.appModule.authenticationManager.restoreAuthStateFromStorage()
                 if (!XpeApp.appModule.authenticationManager.isAuthValid()) {
                     XpeApp.appModule.authenticationManager.logout()
-                    withContext(Dispatchers.Main) {
+                    withContext(DefaultDispatcherProvider.main) {
                         startScreenFlow.value = Screens.Login
                     }
                 }
@@ -142,13 +142,13 @@ class MainActivity : ComponentActivity() {
     private fun checkForUpdate() {
         // Check for updates only in release mode
         if (!BuildConfig.DEBUG) {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(DefaultDispatcherProvider.io).launch {
                 val latestVersion = getLatestReleaseTag()
                 val currentVersion = getCurrentAppVersion()
 
                 // If the latest version is not null and is greater than the current version,
                 if (latestVersion != null && isVersionLessThan(currentVersion, latestVersion)) {
-                    withContext(Dispatchers.Main) {
+                    withContext(DefaultDispatcherProvider.main) {
                         showUpdateDialog(latestVersion)
                     }
                 }
@@ -181,7 +181,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private suspend fun getLatestReleaseTag(): String? {
-        return withContext(Dispatchers.IO) {
+        return withContext(DefaultDispatcherProvider.io) {
             val client = OkHttpClient()
             val request = Request.Builder()
                 .url("https://api.github.com/repos/XPEHO/xpeapp_android/releases/latest")
