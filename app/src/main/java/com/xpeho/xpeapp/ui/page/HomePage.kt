@@ -164,7 +164,6 @@ fun HomePage(navigationController: NavController) {
                                         }
                                     }
                                 }
-                                else -> {}
                             }
                         }
 
@@ -190,7 +189,6 @@ fun HomePage(navigationController: NavController) {
                                         }
                                     }
                                 }
-                                else -> {}
                             }
                         }
                     } else {

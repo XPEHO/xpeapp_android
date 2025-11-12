@@ -17,6 +17,7 @@ import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
 import com.xpeho.xpeapp.data.model.qvst.QvstQuestion
 import com.xpeho.xpeapp.data.model.user.UpdatePasswordResult
+import com.xpeho.xpeapp.utils.CrashlyticsUtils
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -126,6 +127,8 @@ class WordpressRepository(
         username: String,
         onlyActive: Boolean = false
     ): List<QvstCampaignEntity>? {
+        CrashlyticsUtils.setCurrentFeature("qvst")
+        CrashlyticsUtils.setCustomKey("qvst_only_active", onlyActive.toString())
         handleServiceExceptions(
             tryBody = {
                 val campaigns = if (onlyActive) {
@@ -403,11 +406,25 @@ class WordpressRepository(
         catchBody: (Exception) -> T
     ): T {
         return try {
-            tryBody()
+            val result = tryBody()
+            // Crashlytics : Log de succès pour les appels API
+            CrashlyticsUtils.logEvent("API WordPress: Appel réussi")
+            CrashlyticsUtils.setCurrentFeature("api_wordpress")
+            result
         } catch (e: Exception) {
             if (isNetworkError(e)) {
+                // Crashlytics : Log des erreurs réseau
+                CrashlyticsUtils.logEvent("API WordPress: Erreur réseau - ${e.javaClass.simpleName}")
+                CrashlyticsUtils.recordException(e)
+                CrashlyticsUtils.setCustomKey("last_api_error", e.message ?: "Erreur inconnue")
+                CrashlyticsUtils.setCustomKey("last_api_error_time", System.currentTimeMillis().toString())
+                CrashlyticsUtils.setCurrentFeature("api_wordpress_error")
                 catchBody(e)
             } else {
+                // Crashlytics : Log des erreurs non-réseau (généralement plus graves)
+                CrashlyticsUtils.logEvent("API WordPress: Erreur critique - ${e.javaClass.simpleName}")
+                CrashlyticsUtils.recordException(e)
+                CrashlyticsUtils.setCurrentFeature("api_wordpress_critical")
                 throw e
             }
         }

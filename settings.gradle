@@ -3,7 +3,7 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { 
+        maven {
             url 'https://maven.pkg.github.com/XPEHO/xpeho_ui_android'
             credentials {
                 username = ""
@@ -18,7 +18,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { 
+        maven {
             url 'https://maven.pkg.github.com/XPEHO/xpeho_ui_android'
             credentials {
                 username = ""

@@ -9,6 +9,7 @@ import com.xpeho.xpeapp.data.model.WordpressToken
 import com.xpeho.xpeapp.data.service.FirebaseService
 import com.xpeho.xpeapp.data.service.WordpressRepository
 import com.xpeho.xpeapp.di.TokenProvider
+import com.xpeho.xpeapp.utils.CrashlyticsUtils
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,6 +93,15 @@ class AuthenticationManager(
     }
 
     suspend fun login(username: String, password: String): AuthResult<WordpressToken> = coroutineScope {
+        // Crashlytics : Contexte de connexion
+        CrashlyticsUtils.setCurrentScreen("login")
+        CrashlyticsUtils.setCurrentFeature("authentication")
+        CrashlyticsUtils.setUserContext(isLoggedIn = false)
+        
+        // Crashlytics : Log de la tentative de connexion
+        CrashlyticsUtils.logEvent("Tentative de connexion pour: $username")
+        CrashlyticsUtils.setCustomKey("last_login_attempt", System.currentTimeMillis().toString())
+        
         val wpDefRes = async {
             wordpressRepo.authenticate(AuthentificationBody(username, password))
         }
@@ -103,14 +113,25 @@ class AuthenticationManager(
                 },
                 catchBody = { e ->
                     Log.e("AuthenticationManager: login", "Network error: ${e.message}")
+                    // Crashlytics : Enregistrer l'erreur réseau
+                    CrashlyticsUtils.recordException(e)
                     return@async AuthResult.NetworkError
                 }
             )
         }
 
         val result = when (val wpRes = wpDefRes.await()) {
-            is AuthResult.NetworkError -> AuthResult.NetworkError
-            is AuthResult.Unauthorized -> AuthResult.Unauthorized
+            is AuthResult.NetworkError -> {
+                // Crashlytics : Log erreur réseau
+                CrashlyticsUtils.logEvent("Erreur réseau lors de la connexion pour: $username")
+                AuthResult.NetworkError
+            }
+            is AuthResult.Unauthorized -> {
+                // Crashlytics : Log erreur d'authentification
+                CrashlyticsUtils.logEvent("Erreur d'authentification pour: $username")
+                CrashlyticsUtils.setCustomKey("last_failed_login", username)
+                AuthResult.Unauthorized
+            }
             else -> {
                 val fbRes = fbDefRes.await()
                 when (fbRes) {
@@ -121,6 +142,15 @@ class AuthenticationManager(
                         writeAuthentication(authData)
                         _authState.value = AuthState.Authenticated(authData)
                         tokenProvider.set("Bearer ${authData.token.token}")
+                        
+                        // Crashlytics : Log connexion réussie
+                        CrashlyticsUtils.logEvent("Connexion réussie pour: $username")
+                        CrashlyticsUtils.setUserId(authData.token.userEmail)
+                        CrashlyticsUtils.setCustomKey("user_email", authData.token.userEmail)
+                        CrashlyticsUtils.setCustomKey("last_successful_login", System.currentTimeMillis().toString())
+                        CrashlyticsUtils.setUserContext(isLoggedIn = true)
+                        CrashlyticsUtils.setCurrentScreen("home")
+                        
                         wpRes
                     }
                 }
@@ -140,10 +170,24 @@ class AuthenticationManager(
     }
 
     suspend fun logout() {
+        // Crashlytics : Contexte de déconnexion
+        CrashlyticsUtils.setCurrentFeature("authentication")
+        CrashlyticsUtils.setCurrentScreen("logout")
+        
+        // Crashlytics : Log de la déconnexion
+        val currentUser = getAuthData()?.token?.userEmail ?: "utilisateur_inconnu"
+        CrashlyticsUtils.logEvent("Déconnexion de l'utilisateur: $currentUser")
+        
         firebaseService.signOut()
         datastorePref.clearAuthData()
         datastorePref.setWasConnectedLastTime(false)
         _authState.value = AuthState.Unauthenticated
+        
+        // Crashlytics : Nettoyer les infos utilisateur
+        CrashlyticsUtils.setUserId("")
+        CrashlyticsUtils.setCustomKey("user_email", "")
+        CrashlyticsUtils.setUserContext(isLoggedIn = false)
+        CrashlyticsUtils.setCurrentScreen("login")
     }
 }
 
