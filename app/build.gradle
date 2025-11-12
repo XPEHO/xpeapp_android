@@ -165,7 +165,8 @@ sonar {
                 **/DatastorePref.kt,\
                 **/FirebaseService.kt,\
                 **/WordpressService.kt,\
-                **/*Interceptor.kt,"
+                **/*Interceptor.kt,\
+                **/CrashlyticsUtils.kt,"
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
     }
 }
