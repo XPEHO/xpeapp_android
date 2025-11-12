@@ -8,35 +8,50 @@ object CrashlyticsUtils {
      * Enregistre un événement personnalisé dans Crashlytics
      */
     fun logEvent(message: String) {
-        FirebaseCrashlytics.getInstance().log(message)
+        try {
+            FirebaseCrashlytics.getInstance().log(message)
+        } catch (_: Throwable) {
+        }
     }
     
     /**
      * Enregistre une exception non fatale dans Crashlytics
      */
     fun recordException(exception: Throwable) {
-        FirebaseCrashlytics.getInstance().recordException(exception)
+        try {
+            FirebaseCrashlytics.getInstance().recordException(exception)
+        } catch (_: Throwable) {
+        }
     }
     
     /**
      * Définit un identifiant utilisateur pour les crash reports
      */
     fun setUserId(userId: String) {
-        FirebaseCrashlytics.getInstance().setUserId(userId)
+        try {
+            FirebaseCrashlytics.getInstance().setUserId(userId)
+        } catch (_: Throwable) {
+        }
     }
     
     /**
      * Ajoute une clé-valeur personnalisée aux crash reports
      */
     fun setCustomKey(key: String, value: String) {
-        FirebaseCrashlytics.getInstance().setCustomKey(key, value)
+        try {
+            FirebaseCrashlytics.getInstance().setCustomKey(key, value)
+        } catch (_: Throwable) {
+        }
     }
     
     /**
      * Définit le screen/écran actuel pour contextualiser les erreurs
      */
     fun setCurrentScreen(screenName: String) {
-        FirebaseCrashlytics.getInstance().setCustomKey("screen", screenName)
+        try {
+            FirebaseCrashlytics.getInstance().setCustomKey("screen", screenName)
+        } catch (_: Throwable) {
+        }
         logEvent("Navigation vers: $screenName")
     }
     
@@ -44,16 +59,22 @@ object CrashlyticsUtils {
      * Définit la feature/fonctionnalité actuelle
      */
     fun setCurrentFeature(featureName: String) {
-        FirebaseCrashlytics.getInstance().setCustomKey("feature", featureName)
+        try {
+            FirebaseCrashlytics.getInstance().setCustomKey("feature", featureName)
+        } catch (_: Throwable) {
+        }
     }
     
     /**
      * Définit le contexte utilisateur (connecté/déconnecté)
      */
     fun setUserContext(isLoggedIn: Boolean, userRole: String = "") {
-        FirebaseCrashlytics.getInstance().setCustomKey("user_logged_in", isLoggedIn.toString())
-        if (userRole.isNotEmpty()) {
-            FirebaseCrashlytics.getInstance().setCustomKey("user_role", userRole)
+        try {
+            FirebaseCrashlytics.getInstance().setCustomKey("user_logged_in", isLoggedIn.toString())
+            if (userRole.isNotEmpty()) {
+                FirebaseCrashlytics.getInstance().setCustomKey("user_role", userRole)
+            }
+        } catch (_: Throwable) {
         }
     }
 }

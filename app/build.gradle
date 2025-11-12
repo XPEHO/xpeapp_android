@@ -71,7 +71,7 @@ android {
             getPropertiesFile('app/config/uat.properties').each { p ->
                 buildConfigField 'String', p.key, p.value
             }
-            // Désactiver l'upload des mapping files en debug
+            // Disable mapping file upload in debug to avoid unnecessary uploads
             firebaseCrashlytics {
                 mappingFileUploadEnabled false
             }
@@ -83,7 +83,7 @@ android {
             getPropertiesFile('app/config/prod.properties').each { p ->
                 buildConfigField 'String', p.key, p.value
             }
-            // Activer l'upload des mapping files en release pour un meilleur débogage
+            // Unable to upload mapping files without this in release
             firebaseCrashlytics {
                 mappingFileUploadEnabled true
                 nativeSymbolUploadEnabled true

@@ -13,8 +13,8 @@ class XpeApp : Application() {
     override fun onCreate() {
         super.onCreate()
         
-        // Initialiser Firebase Crashlytics
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        // Initialize Firebase Crashlytics
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
         
         appModule = MainAppModule(appContext = this)
     }
