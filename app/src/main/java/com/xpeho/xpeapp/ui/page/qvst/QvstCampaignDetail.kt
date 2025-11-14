@@ -44,6 +44,7 @@ import com.xpeho.xpeapp.ui.viewModel.qvst.QvstCampaignQuestionsState
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstCampaignQuestionsViewModel
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstCampaignsViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
+import com.xpeho.xpeapp.utils.AnalyticsEventName
 import com.xpeho.xpeho_ui_android.InputText
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
@@ -74,7 +75,7 @@ fun QvstCampaignDetailPage(
     )
     var campaign: QvstCampaignEntity?
 
-    sendAnalyticsEvent("qvst_campaign_detail_page")
+    sendAnalyticsEvent(AnalyticsEventName.QVST_CAMPAIGN_DETAIL_PAGE)
 
     LaunchedEffect(Unit) {
         MainScope().launch {

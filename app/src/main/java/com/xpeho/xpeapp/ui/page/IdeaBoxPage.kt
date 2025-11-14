@@ -14,6 +14,8 @@ import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.viewModel.ideaBox.IdeaBoxState
 import com.xpeho.xpeapp.ui.viewModel.ideaBox.IdeaBoxViewModel
+import com.xpeho.xpeapp.utils.AnalyticsEventName
+import com.xpeho.xpeapp.ui.sendAnalyticsEvent
 import com.xpeho.xpeho_ui_android.ClickyButton
 import com.xpeho.xpeho_ui_android.InputText
 import java.util.UUID
@@ -22,6 +24,7 @@ import java.util.UUID
 fun IdeaBoxPage(
     ideaBoxViewModel: IdeaBoxViewModel = viewModel()
 ) {
+    sendAnalyticsEvent(AnalyticsEventName.IDEABOX_PAGE)
     var inputsResetKey by remember { mutableStateOf(UUID.randomUUID().toString()) }
 
     // Quand l’état passe à SAVED, on réinitialise le formulaire

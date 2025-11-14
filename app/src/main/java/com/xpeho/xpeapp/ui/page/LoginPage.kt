@@ -30,6 +30,7 @@ import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
+import com.xpeho.xpeapp.utils.AnalyticsEventName
 import com.xpeho.xpeapp.ui.uiState.WordpressUiState
 import com.xpeho.xpeapp.ui.viewModel.WordpressViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
@@ -49,7 +50,7 @@ fun LoginPage(onLoginSuccess: () -> Unit) {
         }
     )
 
-    sendAnalyticsEvent("login_page")
+    sendAnalyticsEvent(AnalyticsEventName.LOGIN_PAGE)
 
     // If login is successful, notify of login success
     LaunchedEffect(wordpressViewModel.wordpressState) {

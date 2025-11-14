@@ -3,13 +3,10 @@ package com.xpeho.xpeapp.ui
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.model.RequestLeave
@@ -22,6 +19,8 @@ import java.time.LocalDate
 import java.time.Month
 import java.time.Year
 import com.xpeho.xpeho_ui_android.R.drawable as XpehoRes
+import androidx.core.net.toUri
+import com.xpeho.xpeapp.utils.AnalyticsManager
 
 class Resources {
 
@@ -131,7 +130,7 @@ fun openPdfFile(
     pdfUrl: String
 ) {
     try {
-        val uri = Uri.parse(pdfUrl)
+        val uri = pdfUrl.toUri()
         val intent = Intent(Intent.ACTION_VIEW, uri)
         openUrlLauncher.launch(intent)
     } catch (e: URISyntaxException) {
@@ -143,11 +142,6 @@ fun openPdfFile(
     }
 }
 
-fun sendAnalyticsEvent(page: String) {
-    XpeApp.appModule.firebaseAnalytics.logEvent(
-        FirebaseAnalytics.Event.VIEW_ITEM,
-        Bundle().apply {
-            putString(FirebaseAnalytics.Param.ITEM_ID, page)
-        }
-    )
+fun sendAnalyticsEvent(page: String, analytics: AnalyticsManager = XpeApp.appModule.analytics) {
+    analytics.logScreen(page)
 }
