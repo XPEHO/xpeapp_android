@@ -13,7 +13,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.analytics.FirebaseAnalytics
+import com.xpeho.xpeapp.utils.AnalyticsEventName
+import com.xpeho.xpeapp.utils.AnalyticsParamKey
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.model.Newsletter
 import com.xpeho.xpeapp.ui.openPdfFile
@@ -54,11 +55,11 @@ fun NewsletterCard(newsletter: Newsletter, open: Boolean) {
                 verticalPadding = 3.dp,
                 horizontalPadding = 40.dp
             ) {
-                XpeApp.appModule.firebaseAnalytics.logEvent(
-                    "open_newsletter",
+                XpeApp.appModule.analytics.logEvent(
+                    AnalyticsEventName.OPEN_NEWSLETTER,
                     Bundle().apply {
-                        putString(FirebaseAnalytics.Param.ITEM_ID, newsletter.id)
-                        putString(FirebaseAnalytics.Param.ITEM_NAME, newsletterMonth)
+                        putString(AnalyticsParamKey.ITEM_ID, newsletter.id)
+                        putString(AnalyticsParamKey.ITEM_NAME, newsletterMonth)
                     }
                 )
                 openPdfFile(

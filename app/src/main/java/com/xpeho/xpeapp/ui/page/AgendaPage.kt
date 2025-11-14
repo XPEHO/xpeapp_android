@@ -15,6 +15,7 @@ import com.xpeho.xpeapp.ui.components.agenda.AgendaEventItem
 import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
+import com.xpeho.xpeapp.utils.AnalyticsEventName
 import com.xpeho.xpeapp.ui.uiState.AgendaUiState
 import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModel
 
@@ -22,7 +23,7 @@ import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModel
 fun AgendaPage(agendaViewModel : AgendaViewModel = viewModel()) {
     val agendaState = agendaViewModel.state
 
-    sendAnalyticsEvent("agenda_page")
+    sendAnalyticsEvent(AnalyticsEventName.AGENDA_PAGE)
 
     LazyColumn(
         modifier = Modifier
