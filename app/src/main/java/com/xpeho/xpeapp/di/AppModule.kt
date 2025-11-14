@@ -29,6 +29,7 @@ interface AppModule {
     val datastorePref: DatastorePref
     val tokenProvider: TokenProvider
     val firebaseAnalytics: FirebaseAnalytics
+    val analytics: com.xpeho.xpeapp.utils.AnalyticsManager
 }
 
 class MainAppModule(
@@ -84,12 +85,17 @@ class MainAppModule(
         }
     }
 
+    override val analytics: com.xpeho.xpeapp.utils.AnalyticsManager by lazy {
+        com.xpeho.xpeapp.utils.FirebaseAnalyticsManager(firebaseAnalytics)
+    }
+
     override val authenticationManager: AuthenticationManager by lazy {
         AuthenticationManager(
             tokenProvider = tokenProvider,
             wordpressRepo = wordpressRepository,
             datastorePref = datastorePref,
-            firebaseService = firebaseService
+            firebaseService = firebaseService,
+            analytics = analytics
         )
     }
 

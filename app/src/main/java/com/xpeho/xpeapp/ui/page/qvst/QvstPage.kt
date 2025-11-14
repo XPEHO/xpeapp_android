@@ -19,6 +19,7 @@ import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.layout.TitleWithFilter
 import com.xpeho.xpeapp.ui.components.qvst.QvstCardList
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
+import com.xpeho.xpeapp.utils.AnalyticsEventName
 import com.xpeho.xpeapp.ui.uiState.QvstUiState
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstCampaignsViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
@@ -42,7 +43,7 @@ fun QvstPage(
         }
     )
 
-    sendAnalyticsEvent("qvst_page")
+    sendAnalyticsEvent(AnalyticsEventName.QVST_PAGE)
 
     LaunchedEffect(Unit) {
         campaignViewModel.updateState()

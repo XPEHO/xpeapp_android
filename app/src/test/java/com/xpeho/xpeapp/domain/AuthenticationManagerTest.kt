@@ -32,6 +32,7 @@ class AuthenticationManagerTest {
         protected lateinit var datastorePref: DatastorePref
         protected lateinit var authManager: AuthenticationManager
         protected lateinit var firebaseService: FirebaseService
+        protected lateinit var analytics: com.xpeho.xpeapp.utils.AnalyticsManager
 
         @Before
         fun setUp() {
@@ -39,10 +40,14 @@ class AuthenticationManagerTest {
             wordpressRepo = mockk()
             datastorePref = mockk()
             firebaseService = mockk()
+            analytics = mockk()
             coEvery { firebaseService.authenticate() } just runs
 
+            // Allow analytics.setUserId to be called without stubbing each time
+            io.mockk.every { analytics.setUserId(any()) } just runs
+
             //return@async AuthResult.Success(Unit)
-            authManager = AuthenticationManager(tokenProvider, wordpressRepo, datastorePref, firebaseService)
+            authManager = AuthenticationManager(tokenProvider, wordpressRepo, datastorePref, firebaseService, analytics)
 
             // Mock android.util.Log methods
             mockkStatic(Log::class)
