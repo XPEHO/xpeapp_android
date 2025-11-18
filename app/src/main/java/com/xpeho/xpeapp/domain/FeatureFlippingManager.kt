@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseException
 import com.xpeho.xpeapp.BuildConfig
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.service.FirebaseService
+import com.xpeho.xpeapp.utils.CrashlyticsUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,12 +42,18 @@ class FeatureFlippingManager(
     }
 
     private suspend fun fetchData() {
+        CrashlyticsUtils.logEvent("FeatureFlipping: " +
+                "Récupération des feature flags")
         val featureFlippingList = try {
             firebaseService.fetchFeatureFlipping()
         } catch (e: IOException) {
+            CrashlyticsUtils.logEvent("FeatureFlipping: Erreur réseau")
+            CrashlyticsUtils.recordException(e)
             _featuresState.value = FeatureFlippingState.ERROR("Network error: ${e.message}")
             return
         } catch (e: FirebaseException) {
+            CrashlyticsUtils.logEvent("FeatureFlipping: Erreur Firebase")
+            CrashlyticsUtils.recordException(e)
             _featuresState.value = FeatureFlippingState.ERROR("Firebase error: ${e.message}")
             return
         }
@@ -61,6 +68,9 @@ class FeatureFlippingManager(
             }
         }
 
+        CrashlyticsUtils.logEvent("FeatureFlipping: Configuration " +
+                "chargée avec succès (${featureEnabled.size} features)")
+        CrashlyticsUtils.setCustomKey("feature_flags_loaded", featureEnabled.size.toString())
         _featuresState.value = FeatureFlippingState.SUCCESS(featureEnabled.toMap())
     }
 }

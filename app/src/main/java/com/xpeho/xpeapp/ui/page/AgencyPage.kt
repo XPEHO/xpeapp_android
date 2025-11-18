@@ -1,6 +1,8 @@
 package com.xpeho.xpeapp.ui.page
 
 import android.content.Context
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,11 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xpeho.xpeapp.BuildConfig
@@ -34,7 +33,6 @@ import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 @Composable
 fun AgencyPage() {
     val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
     val showdigiCode = remember { mutableStateOf(false) }
     val showalarmCode = remember { mutableStateOf(false) }
 
@@ -56,12 +54,12 @@ fun AgencyPage() {
         }
 
         item {
-            WifiCard(clipboardManager, context)
+            WifiCard(context)
             Spacer(modifier = Modifier.height(10.dp))
         }
 
         item {
-            GuestWifiCard(clipboardManager, context)
+            GuestWifiCard(context)
             Spacer(modifier = Modifier.height(10.dp))
         }
 
@@ -122,7 +120,7 @@ private fun EveningInstructionsCard() {
 }
 
 @Composable
-private fun WifiCard(clipboardManager: ClipboardManager, context: Context) {
+private fun WifiCard(context: Context) {
     CollapsableCard(
         label = "Wifi",
         tags = {
@@ -138,7 +136,9 @@ private fun WifiCard(clipboardManager: ClipboardManager, context: Context) {
                 backgroundColor = XpehoColors.XPEHO_COLOR,
                 labelColor = Color.White
             ) {
-                clipboardManager.setText(AnnotatedString(BuildConfig.WIFI_PASSWORD))
+                val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("password", BuildConfig.WIFI_PASSWORD)
+                clipboardManager.setPrimaryClip(clip)
                 Toast.makeText(context,
                     "Wifi copié", Toast.LENGTH_SHORT).show()
             }
@@ -158,7 +158,7 @@ private fun WifiCard(clipboardManager: ClipboardManager, context: Context) {
 }
 
 @Composable
-private fun GuestWifiCard(clipboardManager: ClipboardManager, context: Context) {
+private fun GuestWifiCard(context: Context) {
     CollapsableCard(
         label = "Wifi invité",
         tags = {
@@ -175,7 +175,9 @@ private fun GuestWifiCard(clipboardManager: ClipboardManager, context: Context) 
                 backgroundColor = XpehoColors.XPEHO_COLOR,
                 labelColor = Color.White
             ) {
-                clipboardManager.setText(AnnotatedString(BuildConfig.WIFI_GUEST_PASSWORD))
+                val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("password", BuildConfig.WIFI_GUEST_PASSWORD)
+                clipboardManager.setPrimaryClip(clip)
                 Toast.makeText(context,
                     "Wifi invité copié",
                     Toast.LENGTH_SHORT).show()
