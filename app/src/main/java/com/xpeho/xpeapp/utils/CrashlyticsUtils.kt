@@ -4,8 +4,6 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 object CrashlyticsUtils {
 
-    private const val TAG = "CrashlyticsUtils"
-
     private val crashlytics: FirebaseCrashlytics
         get() = FirebaseCrashlytics.getInstance()
 
