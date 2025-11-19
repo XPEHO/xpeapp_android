@@ -8,6 +8,7 @@ import com.xpeho.xpeapp.data.model.WordpressToken
 import com.xpeho.xpeapp.data.service.FirebaseService
 import com.xpeho.xpeapp.data.service.WordpressRepository
 import com.xpeho.xpeapp.di.TokenProvider
+import com.xpeho.xpeapp.utils.AnalyticsManager
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -32,7 +33,7 @@ class AuthenticationManagerTest {
         protected lateinit var datastorePref: DatastorePref
         protected lateinit var authManager: AuthenticationManager
         protected lateinit var firebaseService: FirebaseService
-        protected lateinit var analytics: com.xpeho.xpeapp.utils.AnalyticsManager
+        protected lateinit var analytics: AnalyticsManager
 
         @Before
         fun setUp() {

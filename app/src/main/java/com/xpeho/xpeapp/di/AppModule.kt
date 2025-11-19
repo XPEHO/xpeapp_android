@@ -14,6 +14,7 @@ import com.xpeho.xpeapp.data.service.interceptor.AuthorizationHeaderInterceptor
 import com.xpeho.xpeapp.domain.AuthenticationManager
 import com.xpeho.xpeapp.domain.FeatureFlippingManager
 import com.xpeho.xpeapp.utils.AnalyticsManager
+import com.xpeho.xpeapp.utils.FirebaseAnalyticsManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -86,7 +87,7 @@ class MainAppModule(
     }
 
     override val analytics: AnalyticsManager by lazy {
-        com.xpeho.xpeapp.utils.FirebaseAnalyticsManager(firebaseAnalytics)
+        FirebaseAnalyticsManager(firebaseAnalytics)
     }
 
     override val authenticationManager: AuthenticationManager by lazy {
