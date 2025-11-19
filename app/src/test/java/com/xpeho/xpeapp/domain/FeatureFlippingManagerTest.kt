@@ -1,14 +1,12 @@
 package com.xpeho.xpeapp.domain
 
-import android.util.Log
+import com.xpeho.xpeapp.mockAllLogMethods
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.model.FeatureFlipping
 import com.xpeho.xpeapp.data.service.FirebaseService
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -16,7 +14,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
-import java.io.IOException
 
 @RunWith(Enclosed::class)
 class FeatureFlippingManagerTest {
@@ -28,11 +25,7 @@ class FeatureFlippingManagerTest {
         @Before
         fun setUp() {
             firebaseService = mockk()
-
-            // Mock android.util.Log methods
-            mockkStatic(Log::class)
-            every { Log.e(any(), any()) } returns 0
-
+            mockAllLogMethods()
             featureFlippingManager = FeatureFlippingManager(firebaseService)
         }
     }
