@@ -16,7 +16,7 @@ object CrashlyticsUtils {
     fun logEvent(message: String) {
         try {
             crashlytics.log(message)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to log event to Crashlytics", e)
         }
     }
@@ -27,7 +27,7 @@ object CrashlyticsUtils {
     fun recordException(exception: Throwable) {
         try {
             crashlytics.recordException(exception)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to record exception to Crashlytics", e)
         }
     }
@@ -38,7 +38,7 @@ object CrashlyticsUtils {
     fun setUserId(userId: String) {
         try {
             crashlytics.setUserId(userId)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to set user ID", e)
         }
     }
@@ -49,7 +49,7 @@ object CrashlyticsUtils {
     fun setCustomKey(key: String, value: String) {
         try {
             crashlytics.setCustomKey(key, value)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to set custom key ($key)", e)
         }
     }
@@ -60,7 +60,7 @@ object CrashlyticsUtils {
     fun setCurrentScreen(screenName: String) {
         try {
             crashlytics.setCustomKey("screen", screenName)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to set current screen", e)
         }
     }
@@ -71,7 +71,7 @@ object CrashlyticsUtils {
     fun setCurrentFeature(featureName: String) {
         try {
             crashlytics.setCustomKey("feature", featureName)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to set current feature", e)
         }
     }
@@ -86,7 +86,7 @@ object CrashlyticsUtils {
             if (userRole.isNotEmpty()) {
                 crashlytics.setCustomKey("user_role", userRole)
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to set user context", e)
         }
     }
