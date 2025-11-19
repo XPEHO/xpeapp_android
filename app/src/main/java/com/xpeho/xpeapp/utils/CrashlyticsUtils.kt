@@ -1,80 +1,93 @@
 package com.xpeho.xpeapp.utils
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 object CrashlyticsUtils {
-    
+
+    private const val TAG = "CrashlyticsUtils"
+
+    private val crashlytics: FirebaseCrashlytics
+        get() = FirebaseCrashlytics.getInstance()
+
     /**
-     * Enregistre un événement personnalisé dans Crashlytics
+     * Enregistre un événement personnalisé dans Crashlytics.
      */
     fun logEvent(message: String) {
         try {
-            FirebaseCrashlytics.getInstance().log(message)
-        } catch (_: Throwable) {
+            crashlytics.log(message)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to log event to Crashlytics", e)
         }
     }
-    
+
     /**
-     * Enregistre une exception non fatale dans Crashlytics
+     * Enregistre une exception non fatale dans Crashlytics.
      */
     fun recordException(exception: Throwable) {
         try {
-            FirebaseCrashlytics.getInstance().recordException(exception)
-        } catch (_: Throwable) {
+            crashlytics.recordException(exception)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to record exception to Crashlytics", e)
         }
     }
-    
+
     /**
-     * Définit un identifiant utilisateur pour les crash reports
+     * Définit un identifiant utilisateur pour les crash reports.
      */
     fun setUserId(userId: String) {
         try {
-            FirebaseCrashlytics.getInstance().setUserId(userId)
-        } catch (_: Throwable) {
+            crashlytics.setUserId(userId)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to set user ID", e)
         }
     }
-    
+
     /**
-     * Ajoute une clé-valeur personnalisée aux crash reports
+     * Ajoute une clé-valeur personnalisée aux crash reports.
      */
     fun setCustomKey(key: String, value: String) {
         try {
-            FirebaseCrashlytics.getInstance().setCustomKey(key, value)
-        } catch (_: Throwable) {
+            crashlytics.setCustomKey(key, value)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to set custom key ($key)", e)
         }
     }
-    
+
     /**
-     * Définit le screen/écran actuel pour contextualiser les erreurs
+     * Définit le screen/écran actuel pour contextualiser les erreurs.
      */
     fun setCurrentScreen(screenName: String) {
         try {
-            FirebaseCrashlytics.getInstance().setCustomKey("screen", screenName)
-        } catch (_: Throwable) {
+            crashlytics.setCustomKey("screen", screenName)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to set current screen", e)
         }
-        logEvent("Navigation vers: $screenName")
     }
-    
+
     /**
-     * Définit la feature/fonctionnalité actuelle
+     * Définit la feature/fonctionnalité actuelle.
      */
     fun setCurrentFeature(featureName: String) {
         try {
-            FirebaseCrashlytics.getInstance().setCustomKey("feature", featureName)
-        } catch (_: Throwable) {
+            crashlytics.setCustomKey("feature", featureName)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to set current feature", e)
         }
     }
-    
+
     /**
-     * Définit le contexte utilisateur (connecté/déconnecté)
+     * Définit le contexte utilisateur (connecté/déconnecté).
      */
     fun setUserContext(isLoggedIn: Boolean, userRole: String = "") {
         try {
-            FirebaseCrashlytics.getInstance().setCustomKey("user_logged_in", isLoggedIn.toString())
+            crashlytics.setCustomKey("user_logged_in", isLoggedIn.toString())
+
             if (userRole.isNotEmpty()) {
-                FirebaseCrashlytics.getInstance().setCustomKey("user_role", userRole)
+                crashlytics.setCustomKey("user_role", userRole)
             }
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to set user context", e)
         }
     }
 }
