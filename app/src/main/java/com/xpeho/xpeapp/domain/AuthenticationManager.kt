@@ -3,6 +3,7 @@ package com.xpeho.xpeapp.domain
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.xpeho.xpeapp.data.DatastorePref
+import com.xpeho.xpeapp.utils.AnalyticsManager
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.model.AuthResult
 import com.xpeho.xpeapp.data.model.WordpressToken
@@ -29,7 +30,8 @@ class AuthenticationManager(
     val tokenProvider: TokenProvider,
     val wordpressRepo: WordpressRepository,
     val datastorePref: DatastorePref,
-    val firebaseService: FirebaseService
+    val firebaseService: FirebaseService,
+    val analytics: AnalyticsManager
 ) {
 
     companion object {
@@ -166,7 +168,10 @@ class AuthenticationManager(
         datastorePref.setIsConnectedLeastOneTime(true)
         datastorePref.setWasConnectedLastTime(true)
         datastorePref.setLastEmail(username)
-        wordpressUid?.let { datastorePref.setUserId(it) }
+        wordpressUid?.let {
+            datastorePref.setUserId(it)
+            analytics.setUserId(it)
+        }
     }
 
     suspend fun logout() {

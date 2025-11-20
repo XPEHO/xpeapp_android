@@ -13,6 +13,8 @@ import com.xpeho.xpeapp.data.service.WordpressService
 import com.xpeho.xpeapp.data.service.interceptor.AuthorizationHeaderInterceptor
 import com.xpeho.xpeapp.domain.AuthenticationManager
 import com.xpeho.xpeapp.domain.FeatureFlippingManager
+import com.xpeho.xpeapp.utils.AnalyticsManager
+import com.xpeho.xpeapp.utils.FirebaseAnalyticsManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -28,6 +30,7 @@ interface AppModule {
     val datastorePref: DatastorePref
     val tokenProvider: TokenProvider
     val firebaseAnalytics: FirebaseAnalytics
+    val analytics: AnalyticsManager
 }
 
 class MainAppModule(
@@ -83,12 +86,17 @@ class MainAppModule(
         }
     }
 
+    override val analytics: AnalyticsManager by lazy {
+        FirebaseAnalyticsManager(firebaseAnalytics)
+    }
+
     override val authenticationManager: AuthenticationManager by lazy {
         AuthenticationManager(
             tokenProvider = tokenProvider,
             wordpressRepo = wordpressRepository,
             datastorePref = datastorePref,
-            firebaseService = firebaseService
+            firebaseService = firebaseService,
+            analytics = analytics
         )
     }
 

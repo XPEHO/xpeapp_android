@@ -15,6 +15,7 @@ import com.xpeho.xpeapp.ui.components.AppLoader
 import com.xpeho.xpeapp.ui.components.layout.TitleWithFilter
 import com.xpeho.xpeapp.ui.components.newsletter.NewsletterCardList
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
+import com.xpeho.xpeapp.utils.AnalyticsEventName
 import com.xpeho.xpeapp.ui.viewModel.newsletter.NewsletterViewModel
 import java.time.LocalDate
 
@@ -28,7 +29,7 @@ fun NewsletterPage(
     val currentYear = LocalDate.now().year
     val selectedYear = remember { mutableIntStateOf(currentYear) }
 
-    sendAnalyticsEvent("newsletter_page")
+    sendAnalyticsEvent(AnalyticsEventName.NEWSLETTER_PAGE)
 
     LaunchedEffect(Unit) {
         newsletterViewModel.updateState()

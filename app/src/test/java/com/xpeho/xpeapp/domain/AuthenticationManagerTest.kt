@@ -8,12 +8,12 @@ import com.xpeho.xpeapp.data.model.WordpressToken
 import com.xpeho.xpeapp.data.service.FirebaseService
 import com.xpeho.xpeapp.data.service.WordpressRepository
 import com.xpeho.xpeapp.di.TokenProvider
+import com.xpeho.xpeapp.utils.AnalyticsManager
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.runs
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
@@ -23,6 +23,7 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import java.net.UnknownHostException
+import com.xpeho.xpeapp.mockAllAndroidFirebaseStatics
 
 @RunWith(Enclosed::class)
 class AuthenticationManagerTest {
@@ -32,6 +33,7 @@ class AuthenticationManagerTest {
         protected lateinit var datastorePref: DatastorePref
         protected lateinit var authManager: AuthenticationManager
         protected lateinit var firebaseService: FirebaseService
+        protected lateinit var analytics: AnalyticsManager
 
         @Before
         fun setUp() {
@@ -39,15 +41,11 @@ class AuthenticationManagerTest {
             wordpressRepo = mockk()
             datastorePref = mockk()
             firebaseService = mockk()
+            analytics = mockk()
             coEvery { firebaseService.authenticate() } just runs
-
-            //return@async AuthResult.Success(Unit)
-            authManager = AuthenticationManager(tokenProvider, wordpressRepo, datastorePref, firebaseService)
-
-            // Mock android.util.Log methods
-            mockkStatic(Log::class)
-            every { Log.e(any(), any()) } returns 0
-            every { Log.d(any(), any()) } returns 0
+            every { analytics.setUserId(any()) } just runs
+            authManager = AuthenticationManager(tokenProvider, wordpressRepo, datastorePref, firebaseService, analytics)
+            mockAllAndroidFirebaseStatics()
         }
     }
 
@@ -132,7 +130,7 @@ class AuthenticationManagerTest {
     class LoginTests : BaseTest() {
 
         @Test
-        fun `login with valid credentials sets Authenticated`() = runBlocking {
+        fun `login with valid credentials sets Authenticated`() = runBlocking<Unit> {
             val username = "username"
             val password = "password"
             val token = WordpressToken("token", "user_email", "user_nicename", "user_display_name")
@@ -348,3 +346,5 @@ class AuthenticationManagerTest {
     }
 
 }
+
+    // The mockAllLogMethods function is now imported from the common utility file

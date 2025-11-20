@@ -122,7 +122,7 @@ private fun getTagColor(baseColor: Color): Color {
 
 private fun getEventTypeIcon(event: AgendaEvent, eventType: List<AgendaEventType>): Int {
     return when (eventType.firstOrNull { it.id == event.typeId.toInt() }?.label) {
-        "XpeUp" -> R.drawable.birthday
+        "XpeUp" -> R.drawable.learn
         "Event interne" -> R.drawable.building
         "Formation" -> R.drawable.study
         "RSE" -> R.drawable.leaf

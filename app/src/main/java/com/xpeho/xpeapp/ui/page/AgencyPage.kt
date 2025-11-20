@@ -25,6 +25,7 @@ import com.xpeho.xpeapp.BuildConfig
 import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.sendAnalyticsEvent
+import com.xpeho.xpeapp.utils.AnalyticsEventName
 import com.xpeho.xpeho_ui_android.ClickyButton
 import com.xpeho.xpeho_ui_android.CollapsableCard
 import com.xpeho.xpeho_ui_android.TagPill
@@ -36,7 +37,7 @@ fun AgencyPage() {
     val showdigiCode = remember { mutableStateOf(false) }
     val showalarmCode = remember { mutableStateOf(false) }
 
-    sendAnalyticsEvent("agency_page")
+    sendAnalyticsEvent(AnalyticsEventName.AGENCY_PAGE)
 
     LazyColumn(
         modifier = Modifier
