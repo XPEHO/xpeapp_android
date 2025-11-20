@@ -1,6 +1,5 @@
 package com.xpeho.xpeapp.domain
 
-import com.xpeho.xpeapp.mockAllLogMethods
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.data.model.FeatureFlipping
 import com.xpeho.xpeapp.data.service.FirebaseService
@@ -8,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import com.xpeho.xpeapp.mockAllAndroidFirebaseStatics
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -25,7 +25,7 @@ class FeatureFlippingManagerTest {
         @Before
         fun setUp() {
             firebaseService = mockk()
-            mockAllLogMethods()
+            mockAllAndroidFirebaseStatics()
             featureFlippingManager = FeatureFlippingManager(firebaseService)
         }
     }

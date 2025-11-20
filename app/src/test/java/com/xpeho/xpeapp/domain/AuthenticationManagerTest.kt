@@ -8,7 +8,6 @@ import com.xpeho.xpeapp.data.model.WordpressToken
 import com.xpeho.xpeapp.data.service.FirebaseService
 import com.xpeho.xpeapp.data.service.WordpressRepository
 import com.xpeho.xpeapp.di.TokenProvider
-import com.xpeho.xpeapp.mockAllLogMethods
 import com.xpeho.xpeapp.utils.AnalyticsManager
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -24,6 +23,7 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import java.net.UnknownHostException
+import com.xpeho.xpeapp.mockAllAndroidFirebaseStatics
 
 @RunWith(Enclosed::class)
 class AuthenticationManagerTest {
@@ -43,14 +43,9 @@ class AuthenticationManagerTest {
             firebaseService = mockk()
             analytics = mockk()
             coEvery { firebaseService.authenticate() } just runs
-
-            // Allow analytics.setUserId to be called without stubbing each time
             every { analytics.setUserId(any()) } just runs
-
-            //return@async AuthResult.Success(Unit)
             authManager = AuthenticationManager(tokenProvider, wordpressRepo, datastorePref, firebaseService, analytics)
-
-            mockAllLogMethods()
+            mockAllAndroidFirebaseStatics()
         }
     }
 

@@ -18,7 +18,7 @@ import com.xpeho.xpeapp.data.model.user.UpdatePasswordResult
 import com.xpeho.xpeapp.data.model.user.UserInfos
 import com.xpeho.xpeapp.data.service.WordpressRepository
 import com.xpeho.xpeapp.data.service.WordpressService
-import com.xpeho.xpeapp.mockAllLogMethods
+import com.xpeho.xpeapp.mockAllAndroidFirebaseStatics
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -58,7 +58,7 @@ class WordpressRepositoryTest {
         fun setUp() {
             wordpressService = mockk()
             wordpressRepo = spyk(WordpressRepository(wordpressService))
-            mockAllLogMethods()
+            mockAllAndroidFirebaseStatics()
         }
     }
 
