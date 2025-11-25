@@ -1,6 +1,5 @@
 package com.xpeho.xpeapp.data
 
-import android.util.Log
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.entity.QvstAnswerBody
 import com.xpeho.xpeapp.data.entity.QvstCampaignEntity
@@ -19,12 +18,12 @@ import com.xpeho.xpeapp.data.model.user.UpdatePasswordResult
 import com.xpeho.xpeapp.data.model.user.UserInfos
 import com.xpeho.xpeapp.data.service.WordpressRepository
 import com.xpeho.xpeapp.data.service.WordpressService
+import com.xpeho.xpeapp.mockAllAndroidFirebaseStatics
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.spyk
 import io.mockk.verify
@@ -59,9 +58,7 @@ class WordpressRepositoryTest {
         fun setUp() {
             wordpressService = mockk()
             wordpressRepo = spyk(WordpressRepository(wordpressService))
-            mockkStatic(Log::class)
-            every { Log.e(any(), any()) } returns 0
-            every { Log.d(any(), any()) } returns 0
+            mockAllAndroidFirebaseStatics()
         }
     }
 
