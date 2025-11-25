@@ -1,6 +1,5 @@
 package com.xpeho.xpeapp.domain
 
-import android.util.Log
 import com.xpeho.xpeapp.data.DatastorePref
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.model.AuthResult
@@ -130,7 +129,7 @@ class AuthenticationManagerTest {
     class LoginTests : BaseTest() {
 
         @Test
-        fun `login with valid credentials sets Authenticated`() = runBlocking<Unit> {
+        fun `login with valid credentials sets Authenticated`() = runBlocking {
             val username = "username"
             val password = "password"
             val token = WordpressToken("token", "user_email", "user_nicename", "user_display_name")
