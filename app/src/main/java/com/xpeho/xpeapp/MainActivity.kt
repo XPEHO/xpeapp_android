@@ -18,7 +18,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xpeho.xpeapp.enums.Screens
 import com.xpeho.xpeapp.ui.Home
-import com.xpeho.xpeapp.ui.notifications.AlarmScheduler
 import com.xpeho.xpeapp.ui.theme.XpeAppTheme
 import kotlinx.coroutines.CoroutineScope
 import com.xpeho.xpeapp.utils.DefaultDispatcherProvider
@@ -33,6 +32,7 @@ import java.io.IOException
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 import kotlin.time.Duration.Companion.hours
 import androidx.core.net.toUri
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
 
@@ -44,8 +44,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Schedule the alarm if the permission is granted
-            scheduleNotificationAlarm()
+            FirebaseMessaging.getInstance().subscribeToTopic("all")
         } else {
             Log.d("Permission", "Permission denied")
         }
@@ -124,18 +123,13 @@ class MainActivity : ComponentActivity() {
                 android.Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED -> {
                 Log.d("Permission", "Permission already granted")
-                scheduleNotificationAlarm()
+                FirebaseMessaging.getInstance().subscribeToTopic("all")
             }
 
             else -> {
                 requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             }
         }
-    }
-
-    private fun scheduleNotificationAlarm() {
-        val alarmScheduler = AlarmScheduler()
-        alarmScheduler.scheduleAlarm(this)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

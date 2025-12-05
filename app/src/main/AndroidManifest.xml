@@ -21,24 +21,43 @@
         android:networkSecurityConfig="@xml/network_security"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="31">
+        tools:targetApi="33">
 
-        <receiver
-            android:name=".ui.notifications.AlarmReceiver"
-            android:enabled="true" />
+        <!-- FCM default notification icon and color -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/app_icon_cropped" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/xpeho_color" />
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.XpeAppSplashScreen"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Intent filter for FCM notification click_action -->
+            <intent-filter>
+                <action android:name="OPEN_XPEAPP" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+
+        <!-- Service  -->
+        <service
+            android:name=".data.service.FirebaseCloudMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
