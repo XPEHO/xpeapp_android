@@ -85,15 +85,19 @@ fun IdeaBoxPage(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                ClickyButton(
-                    label = "SOUMETTRE",
-                    size = 14.sp,
-                    verticalPadding = 12.dp,
-                    horizontalPadding = 48.dp,
-                    labelColor = Color.White,
-                    enabled = !ideaBoxViewModel.isLoading.value
-                ) {
-                    ideaBoxViewModel.submitIdea()
+                if (ideaBoxViewModel.isLoading.value) {
+                    com.xpeho.xpeapp.ui.components.AppLoader()
+                } else {
+                    ClickyButton(
+                        label = "SOUMETTRE",
+                        size = 14.sp,
+                        verticalPadding = 12.dp,
+                        horizontalPadding = 48.dp,
+                        labelColor = Color.White,
+                        enabled = !ideaBoxViewModel.isLoading.value
+                    ) {
+                        ideaBoxViewModel.submitIdea()
+                    }
                 }
 
                 when (val s = ideaBoxViewModel.state) {

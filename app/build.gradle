@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.compose' version '2.2.0'
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.2.20'
     id 'com.google.gms.google-services'
     id "com.google.devtools.ksp"
     id "org.sonarqube" version "4.2.1.3168"
@@ -99,7 +99,7 @@ android {
     }
     buildFeatures {
         compose true
-        buildConfig = true // déplacé depuis gradle.properties
+        buildConfig = true
     }
     composeOptions {
     }
@@ -114,12 +114,12 @@ jacoco {
     toolVersion = "0.8.7"
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
 }
 
-task jacocoTestReport(type: JacocoReport) {
+tasks.register('jacocoTestReport', JacocoReport) {
     dependsOn 'testDebugUnitTest' // Run unit tests before generating the report
 
     reports {
@@ -172,40 +172,40 @@ sonar {
 }
 
 dependencies {
-    implementation('org.jetbrains.kotlin:kotlin-stdlib:2.2.0')
+    implementation('org.jetbrains.kotlin:kotlin-stdlib:2.2.20')
     implementation 'androidx.core:core-ktx:1.17.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.4'
-    implementation 'androidx.activity:activity-compose:1.11.0'
-    implementation "androidx.compose.ui:ui:1.9.2"
-    implementation "androidx.compose.ui:ui-tooling-preview:1.9.2"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
+    implementation 'androidx.activity:activity-compose:1.12.2'
+    implementation "androidx.compose.ui:ui:1.10.0"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.10.0"
     implementation('androidx.compose.material3:material3-android:1.4.0')
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.2.0")
     implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.1.1'
-    implementation "androidx.compose.material:material-icons-core:1.7.3"
+    implementation "androidx.compose.material:material-icons-core:1.7.8"
     implementation 'androidx.compose.material:material-icons-extended:1.7.8'
-    implementation "androidx.compose.animation:animation-core:1.9.2"
-    implementation 'androidx.fragment:fragment:1.8.9'
+    implementation "androidx.compose.animation:animation-core:1.10.0"
+    implementation 'androidx.fragment:fragment-ktx:1.8.9'
 
     // Test
-    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.10.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'io.mockk:mockk:1.14.5'
 
     // Android Test
     androidTestImplementation 'androidx.test.ext:junit:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.9.2"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.10.0"
 
     // Debug implementation
-    debugImplementation "androidx.compose.ui:ui-tooling:1.9.2"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:1.9.2"
+    debugImplementation "androidx.compose.ui:ui-tooling:1.10.0"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:1.10.0"
 
     // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:34.5.0')
+    implementation platform('com.google.firebase:firebase-bom:34.7.0')
 
     // Firebase
-    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.1")
     implementation 'com.google.firebase:firebase-firestore-ktx:25.1.4'
     implementation 'com.google.firebase:firebase-messaging:25.0.1'
     implementation 'com.google.firebase:firebase-storage-ktx:21.0.2'
@@ -213,13 +213,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ndk'
 
     // Navigation
-    implementation 'androidx.navigation:navigation-compose:2.9.5'
+    implementation 'androidx.navigation:navigation-compose:2.9.6'
 
     // Use Json
     implementation 'com.google.code.gson:gson:2.13.2'
 
     //ViewModel
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0'
 
     //Retrofit for http requests
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
@@ -228,8 +228,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:5.1.0'
 
     //Local data storage
-    implementation 'androidx.datastore:datastore-preferences:1.1.7'
-    implementation "androidx.security:security-crypto:1.0.0"
+    implementation 'androidx.datastore:datastore-preferences:1.2.0'
+    implementation "androidx.security:security-crypto:1.1.0"
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
 
     //Notifications
