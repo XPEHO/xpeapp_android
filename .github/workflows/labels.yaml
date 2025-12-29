@@ -7,5 +7,4 @@ name: Add labels when pull request is opened
 
 jobs:
   xpeho_workflows_labels:
-    uses: actions/checkout@v4
     uses: XPEHO/Xpeho-Workflows/.github/workflows/labels.yaml@main
