@@ -75,6 +75,19 @@ class WordpressRepository(
         )
     }
 
+    suspend fun postLastConnexion(): Boolean {
+        return handleServiceExceptions(
+            tryBody = {
+                api.postLastConnexion()
+                true
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: postLastConnexion", "Network error: ${e.message}")
+                false
+            }
+        )
+    }
+
     fun classifyCampaigns(campaigns: List<QvstCampaignEntity>): Map<Int, List<QvstCampaignEntity>> {
         return campaigns.groupBy { campaign ->
             val formatter = DateTimeFormatter.ofPattern(DATETIME_FORMATTER_PATTERN)
