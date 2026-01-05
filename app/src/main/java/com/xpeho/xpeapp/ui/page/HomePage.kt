@@ -34,12 +34,12 @@ import com.xpeho.xpeapp.ui.viewModel.FeatureFlippingViewModel
 import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModel
 import com.xpeho.xpeapp.ui.viewModel.newsletter.NewsletterViewModel
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstActiveCampaignsViewModel
+import com.xpeho.xpeapp.ui.viewModel.user.UserInfosViewModel
 import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
 
 @Composable
 @Suppress("UnusedMaterial3ScaffoldPaddingParameter")
 fun HomePage(navigationController: NavController) {
-
     // Feature Flipping
     val ffManager = XpeApp.appModule.featureFlippingManager
     val ffViewModel = viewModel<FeatureFlippingViewModel>(
@@ -70,6 +70,15 @@ fun HomePage(navigationController: NavController) {
         }
     )
 
+    val userInfosViewModel = viewModel<UserInfosViewModel>(
+        factory = viewModelFactory {
+            UserInfosViewModel(
+                wordpressRepo = XpeApp.appModule.wordpressRepository,
+                authManager = XpeApp.appModule.authenticationManager
+            )
+        }
+    )
+
     sendAnalyticsEvent(AnalyticsEventName.HOME_PAGE)
 
     LaunchedEffect(Unit) {
@@ -77,6 +86,7 @@ fun HomePage(navigationController: NavController) {
         agendaViewModel.updateStateForWeek()
         newsletterViewModel.updateState()
         ffViewModel.updateState()
+        userInfosViewModel.postLastConnection()
     }
 
     LazyColumn(

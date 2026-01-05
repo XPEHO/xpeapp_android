@@ -42,6 +42,10 @@ interface WordpressService {
     ): String
 
     @Headers("Content-Type: application/json")
+    @POST("xpeho/v1/user:last-connection")
+    suspend fun postLastConnexion()
+
+    @Headers("Content-Type: application/json")
     @GET("xpeho/v1/qvst/campaigns{active}")
     suspend fun getQvstCampaigns(
         @Path("active") active: String = "",

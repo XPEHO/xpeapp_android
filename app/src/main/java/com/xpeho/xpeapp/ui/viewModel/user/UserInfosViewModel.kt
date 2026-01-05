@@ -72,6 +72,16 @@ class UserInfosViewModel(
         }
     }
 
+    fun postLastConnection() {
+        viewModelScope.launch {
+            try {
+                wordpressRepo.postLastConnexion()
+            } catch (e: Exception) {
+                Log.e("UserInfosViewModel", "Exception during postLastConnection", e)
+            }
+        }
+    }
+
 
     fun resetPasswordUpdateState() {
         passwordUpdateState = PasswordUpdateUiState.EMPTY
