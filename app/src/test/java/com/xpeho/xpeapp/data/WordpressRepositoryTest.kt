@@ -684,6 +684,7 @@ class WordpressRepositoryTest {
                 AgendaEvent(
                     id = 1,
                     date = SimpleDateFormat("yyyy-MM-dd").parse("2023-01-01")!!,
+                    endDate = SimpleDateFormat("yyyy-MM-dd").parse("2023-01-02"),
                     startTime = LocalTime.parse("10:00:00"),
                     endTime = LocalTime.parse("12:00:00"),
                     title = "eventName",
