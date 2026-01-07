@@ -7,6 +7,7 @@ import java.util.Date
 data class AgendaEvent(
     val id: Int,
     val date: Date,
+    @SerializedName("end_date") val endDate: Date?,
     @SerializedName("start_time") val startTime: LocalTime?,
     @SerializedName("end_time") val endTime: LocalTime?,
     val title: String,

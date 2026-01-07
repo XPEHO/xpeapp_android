@@ -62,6 +62,13 @@ private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, co
             backgroundColor = color,
             size = 9.sp
         )
+        event.endDate?.let {
+            TagPill(
+                label = dateFormat.format(it),
+                backgroundColor = color,
+                size = 9.sp
+            )
+        }
         if (timeInfo.isNotEmpty()) {
             TagPill(
                 label = timeInfo,
