@@ -57,11 +57,19 @@ private fun getTagsList(event: AgendaEvent, eventType: List<AgendaEventType>, co
     ).joinToString(separator = " ")
 
     return {
-        TagPill(
-            label = dateFormat.format(event.date),
-            backgroundColor = color,
-            size = 9.sp
-        )
+        if (event.endDate != null) {
+            TagPill(
+                label = "Du: ${dateFormat.format(event.date)} Au: ${dateFormat.format(event.endDate)}",
+                backgroundColor = color,
+                size = 9.sp
+            )
+        } else {
+            TagPill(
+                label = dateFormat.format(event.date),
+                backgroundColor = color,
+                size = 9.sp
+            )
+        }
         if (timeInfo.isNotEmpty()) {
             TagPill(
                 label = timeInfo,
