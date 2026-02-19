@@ -1,5 +1,9 @@
 package com.xpeho.xpeapp.ui.page
 
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,11 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,11 +45,9 @@ import com.xpeho.xpeapp.ui.viewModel.viewModelFactory
 import com.xpeho.xpeho_ui_android.ClickyButton
 import com.xpeho.xpeho_ui_android.InputText
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
+import androidx.core.net.toUri
+import com.xpeho.xpeapp.BuildConfig
 
-/**
- * Login page
- * @param onLoginSuccess: Callback when login is successful
- */
 @Composable
 fun LoginPage(onLoginSuccess: () -> Unit) {
     val wordpressViewModel = viewModel<WordpressViewModel>(
@@ -52,14 +58,12 @@ fun LoginPage(onLoginSuccess: () -> Unit) {
 
     sendAnalyticsEvent(AnalyticsEventName.LOGIN_PAGE)
 
-    // If login is successful, notify of login success
     LaunchedEffect(wordpressViewModel.wordpressState) {
         if (wordpressViewModel.wordpressState is WordpressUiState.SUCCESS) {
             onLoginSuccess()
         }
     }
 
-    // If login fails, show error dialog
     if (wordpressViewModel.wordpressState is WordpressUiState.ERROR) {
         CustomDialog(
             title = stringResource(id = R.string.login_page_error_title),
@@ -76,15 +80,12 @@ fun LoginPage(onLoginSuccess: () -> Unit) {
 private fun LoginPageContent(
     wordpressViewModel: WordpressViewModel,
 ) {
-    LoginPageContentColumn(
-        wordpressViewModel,
-    )
-}
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
-@Composable
-private fun LoginPageContentColumn(
-    wordpressViewModel: WordpressViewModel,
-) {
+    // Configuration de l'URL pour le reset de mot de passe
+    val pwdResetUrl = "https://xpeapp-pwd-reset.web.app/"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -101,7 +102,41 @@ private fun LoginPageContentColumn(
         LoginPageButton(
             wordpressViewModel,
         )
+        Spacer(modifier = Modifier.height(26.dp))
+        ForgotPasswordText()
     }
+}
+
+@Composable
+private fun ForgotPasswordText() {
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+
+    Text(
+        text = "Mot de passe oublié ?",
+        color = XpehoColors.CONTENT_COLOR,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier
+            .clickable {
+                focusManager.clearFocus()
+
+                val defaultColors = CustomTabColorSchemeParams.Builder()
+                    .setToolbarColor(XpehoColors.XPEHO_COLOR.toArgb())
+                    .build()
+
+                val customTabsIntent = CustomTabsIntent.Builder()
+                    .setDefaultColorSchemeParams(defaultColors)
+                    .setShowTitle(true)
+                    .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                    .setUrlBarHidingEnabled(true)
+                    .build()
+
+                // Utilisation de l'URL depuis le BuildConfig comme dans ton code
+                customTabsIntent.launchUrl(context, BuildConfig.PASSWORD_RESET_URL.toUri())
+            }
+            .padding(8.dp)
+    )
 }
 
 @Composable
