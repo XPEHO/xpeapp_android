@@ -46,7 +46,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          echo ${{ secrets.GOOGLE_SERVICE_FILE }} | base64 -d > app/google-services.json
+          echo "${{ secrets.GOOGLE_SERVICE_FILE }}" | base64 -d > app/google-services.json
           mkdir -p app/config
-          echo ${{ secrets.UAT_CONFIG_FILE }} | base64 -d > app/config/uat.properties
+          echo "${{ secrets.UAT_CONFIG_FILE }}" | base64 -d > app/config/uat.properties
           ./gradlew assembleDebug jacocoTestReport sonar
