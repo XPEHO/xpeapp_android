@@ -80,12 +80,6 @@ fun LoginPage(onLoginSuccess: () -> Unit) {
 private fun LoginPageContent(
     wordpressViewModel: WordpressViewModel,
 ) {
-    val context = LocalContext.current
-    val focusManager = LocalFocusManager.current
-
-    // Configuration de l'URL pour le reset de mot de passe
-    val pwdResetUrl = "https://xpeapp-pwd-reset.web.app/"
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,7 +126,6 @@ private fun ForgotPasswordText() {
                     .setUrlBarHidingEnabled(true)
                     .build()
 
-                // Utilisation de l'URL depuis le BuildConfig comme dans ton code
                 customTabsIntent.launchUrl(context, BuildConfig.PASSWORD_RESET_URL.toUri())
             }
             .padding(8.dp)
