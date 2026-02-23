@@ -48,6 +48,10 @@ import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 import androidx.core.net.toUri
 import com.xpeho.xpeapp.BuildConfig
 
+/**
+ * Login page
+ * @param onLoginSuccess: Callback when login is successful
+ */
 @Composable
 fun LoginPage(onLoginSuccess: () -> Unit) {
     val wordpressViewModel = viewModel<WordpressViewModel>(
@@ -58,12 +62,14 @@ fun LoginPage(onLoginSuccess: () -> Unit) {
 
     sendAnalyticsEvent(AnalyticsEventName.LOGIN_PAGE)
 
+    // If login is successful, notify of login success
     LaunchedEffect(wordpressViewModel.wordpressState) {
         if (wordpressViewModel.wordpressState is WordpressUiState.SUCCESS) {
             onLoginSuccess()
         }
     }
 
+    // If login fails, show error dialog
     if (wordpressViewModel.wordpressState is WordpressUiState.ERROR) {
         CustomDialog(
             title = stringResource(id = R.string.login_page_error_title),
