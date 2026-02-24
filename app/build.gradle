@@ -186,6 +186,7 @@ dependencies {
     implementation 'androidx.compose.material:material-icons-extended:1.7.8'
     implementation "androidx.compose.animation:animation-core:1.10.0"
     implementation 'androidx.fragment:fragment-ktx:1.8.9'
+    implementation("androidx.browser:browser:1.8.0")
 
     // Test
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.10.0'
