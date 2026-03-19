@@ -1,6 +1,5 @@
 package com.xpeho.xpeapp.ui.viewModel.ideaBox
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,7 +16,6 @@ class MySuggestionsViewModel : ViewModel() {
     private val wordpressRepository = XpeApp.appModule.wordpressRepository
     private val datastorePref = XpeApp.appModule.datastorePref
 
-    val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val ideas = mutableStateOf(emptyList<IdeaStatus>())
     val selectedIdea = mutableStateOf<IdeaStatus?>(null)
     val activeBanner = mutableStateOf<IdeaStatusBanner?>(null)
@@ -29,7 +27,6 @@ class MySuggestionsViewModel : ViewModel() {
     }
 
     fun syncIdeas(openIdeaId: String? = null) {
-        isLoading.value = true
         state = MySuggestionsState.LOADING
 
         viewModelScope.launch {
@@ -40,7 +37,6 @@ class MySuggestionsViewModel : ViewModel() {
             loadBannerState()
 
             state = MySuggestionsState.SUCCESS
-            isLoading.value = false
         }
     }
 
@@ -50,10 +46,6 @@ class MySuggestionsViewModel : ViewModel() {
 
     fun closeSuggestion() {
         selectedIdea.value = null
-    }
-
-    fun clearError() {
-        state = MySuggestionsState.EMPTY
     }
 
     fun loadBannerState() {
@@ -104,5 +96,4 @@ sealed interface MySuggestionsState {
     object EMPTY : MySuggestionsState
     object LOADING : MySuggestionsState
     object SUCCESS : MySuggestionsState
-    data class ERROR(val message: String) : MySuggestionsState
 }

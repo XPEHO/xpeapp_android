@@ -15,8 +15,8 @@ import com.xpeho.xpeapp.ui.page.HomePage
 import com.xpeho.xpeapp.ui.page.LoginPage
 import com.xpeho.xpeapp.ui.page.NewsletterPage
 import com.xpeho.xpeapp.ui.page.AgendaPage
-import com.xpeho.xpeapp.ui.page.IdeaBoxPage
-import com.xpeho.xpeapp.ui.page.MySuggestionsPage
+import com.xpeho.xpeapp.ui.page.ideaBox.IdeaBoxPage
+import com.xpeho.xpeapp.ui.page.ideaBox.MySuggestionsPage
 import com.xpeho.xpeapp.ui.page.qvst.QvstCampaignDetailPage
 import com.xpeho.xpeapp.ui.page.qvst.QvstPage
 import com.xpeho.xpeapp.ui.page.user.ProfilePage

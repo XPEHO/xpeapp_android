@@ -1,4 +1,4 @@
-package com.xpeho.xpeapp.ui.page
+package com.xpeho.xpeapp.ui.page.ideaBox
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

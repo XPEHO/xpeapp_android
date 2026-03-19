@@ -16,6 +16,11 @@ object IdeaStatusMapper {
                 backgroundColor = XpehoColors.GREEN_DARK_COLOR,
             )
 
+            "IMPLEMENTED" -> IdeaStatusUi(
+                label = "IMPLEMENTÉE",
+                backgroundColor = XpehoColors.GREEN_DARK_COLOR,
+            )
+
             "REJECTED", "REFUSED" -> IdeaStatusUi(
                 label = "REJETÉE",
                 backgroundColor = XpehoColors.RED_INFO_COLOR,
@@ -23,7 +28,7 @@ object IdeaStatusMapper {
 
             "PENDING", "IN_PROGRESS", "OPEN" -> IdeaStatusUi(
                 label = "EN COURS",
-                backgroundColor = XpehoColors.XPEHO_COLOR,
+                backgroundColor = XpehoColors.GREEN_DARK_COLOR,
             )
 
             else -> IdeaStatusUi(

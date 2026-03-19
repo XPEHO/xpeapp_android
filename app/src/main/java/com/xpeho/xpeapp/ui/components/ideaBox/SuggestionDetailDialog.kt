@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xpeho.xpeapp.data.model.ideaBox.IdeaStatus
@@ -59,7 +58,6 @@ fun SuggestionDetailDialog(
                     fontSize = 16.sp,
                     fontFamily = XpehoFonts.raleway,
                     fontWeight = FontWeight.Bold,
-                    textDecoration = TextDecoration.Underline,
                     color = Color.Black,
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -77,7 +75,6 @@ fun SuggestionDetailDialog(
                         fontSize = 16.sp,
                         fontFamily = XpehoFonts.raleway,
                         fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
                         color = Color.Black,
                     )
                 }

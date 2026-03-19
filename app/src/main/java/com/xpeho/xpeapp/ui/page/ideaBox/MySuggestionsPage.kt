@@ -1,4 +1,4 @@
-package com.xpeho.xpeapp.ui.page
+package com.xpeho.xpeapp.ui.page.ideaBox
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.ideaBox.SuggestionCard
 import com.xpeho.xpeapp.ui.components.ideaBox.SuggestionDetailDialog
 import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
@@ -43,16 +42,6 @@ fun MySuggestionsPage(
             is MySuggestionsState.LOADING -> {
                 item {
                     com.xpeho.xpeapp.ui.components.AppLoader()
-                }
-            }
-
-            is MySuggestionsState.ERROR -> {
-                item {
-                    CustomDialog(
-                        title = "Erreur",
-                        message = (currentState as MySuggestionsState.ERROR).message,
-                        closeDialog = { mySuggestionsViewModel.clearError() }
-                    )
                 }
             }
 
