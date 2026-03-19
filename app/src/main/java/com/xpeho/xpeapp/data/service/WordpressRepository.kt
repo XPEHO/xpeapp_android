@@ -12,6 +12,7 @@ import com.xpeho.xpeapp.data.model.WordpressToken
 import com.xpeho.xpeapp.data.model.agenda.AgendaBirthday
 import com.xpeho.xpeapp.data.model.agenda.AgendaEvent
 import com.xpeho.xpeapp.data.model.agenda.AgendaEventType
+import com.xpeho.xpeapp.data.model.ideaBox.IdeaStatus
 import com.xpeho.xpeapp.data.model.ideaBox.IdeaSubmission
 import com.xpeho.xpeapp.data.model.qvst.QvstCampaign
 import com.xpeho.xpeapp.data.model.qvst.QvstProgress
@@ -375,6 +376,37 @@ class WordpressRepository(
             catchBody = { e ->
                 Log.e("WordpressRepository: submitIdea", "Network error: ${e.message}")
                 return false
+            }
+        )
+    }
+
+    suspend fun getIdeas(): List<IdeaStatus> {
+        return handleServiceExceptions(
+            tryBody = {
+                val response = api.fetchMyIdeas()
+                when {
+                    response.isSuccessful -> {
+                        response.body().orEmpty()
+                            .sortedByDescending { it.createdAt ?: java.util.Date(0) }
+                    }
+
+                    response.code() == HTTPFORBIDDEN -> {
+                        Log.w("WordpressRepository: getIdeas", "Unauthorized (403) on ideas/my")
+                        emptyList()
+                    }
+
+                    else -> {
+                        Log.e(
+                            "WordpressRepository: getIdeas",
+                            "Unexpected response code ${response.code()} on ideas/my"
+                        )
+                        emptyList()
+                    }
+                }
+            },
+            catchBody = { e ->
+                Log.e("WordpressRepository: getIdeas", "Network error: ${e.message}")
+                emptyList()
             }
         )
     }

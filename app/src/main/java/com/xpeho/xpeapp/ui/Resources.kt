@@ -68,12 +68,6 @@ class Resources {
                 redirection = Screens.Agenda.name,
                 featureFlippingId = FeatureFlippingEnum.AGENDA,
             ),
-            Menu(
-                idImage = XpehoRes.ideabulb,
-                title = "Boite à idées",
-                redirection = Screens.IdeaBox.name,
-                featureFlippingId = FeatureFlippingEnum.IDEABOX,
-            ),
         )
 
     var listOfRequest: Array<RequestLeaveDetail> =

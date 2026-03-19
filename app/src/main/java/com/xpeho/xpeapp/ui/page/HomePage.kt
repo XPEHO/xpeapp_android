@@ -1,5 +1,6 @@
 package com.xpeho.xpeapp.ui.page
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -18,10 +19,12 @@ import com.xpeho.xpeapp.R
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
 import com.xpeho.xpeapp.domain.FeatureFlippingState
+import com.xpeho.xpeapp.enums.Screens
 import com.xpeho.xpeapp.ui.components.CustomDialog
 import com.xpeho.xpeapp.ui.components.agenda.AgendaBirthdayItem
 import com.xpeho.xpeapp.ui.components.agenda.AgendaCardList
 import com.xpeho.xpeapp.ui.components.agenda.AgendaEventItem
+import com.xpeho.xpeapp.ui.components.ideaBox.IdeaStatusBanner
 import com.xpeho.xpeapp.ui.components.layout.NoContentPlaceHolder
 import com.xpeho.xpeapp.ui.components.layout.Title
 import com.xpeho.xpeapp.ui.components.newsletter.NewsletterPreview
@@ -32,6 +35,7 @@ import com.xpeho.xpeapp.ui.uiState.AgendaUiState
 import com.xpeho.xpeapp.ui.uiState.QvstActiveUiState
 import com.xpeho.xpeapp.ui.viewModel.FeatureFlippingViewModel
 import com.xpeho.xpeapp.ui.viewModel.agenda.AgendaViewModel
+import com.xpeho.xpeapp.ui.viewModel.ideaBox.MySuggestionsViewModel
 import com.xpeho.xpeapp.ui.viewModel.newsletter.NewsletterViewModel
 import com.xpeho.xpeapp.ui.viewModel.qvst.QvstActiveCampaignsViewModel
 import com.xpeho.xpeapp.ui.viewModel.user.UserInfosViewModel
@@ -79,6 +83,8 @@ fun HomePage(navigationController: NavController) {
         }
     )
 
+    val mySuggestionsViewModel = viewModel<MySuggestionsViewModel>()
+
     sendAnalyticsEvent(AnalyticsEventName.HOME_PAGE)
 
     LaunchedEffect(Unit) {
@@ -87,6 +93,7 @@ fun HomePage(navigationController: NavController) {
         newsletterViewModel.updateState()
         ffViewModel.updateState()
         userInfosViewModel.postLastConnection()
+        mySuggestionsViewModel.syncIdeas()
     }
 
     LazyColumn(
@@ -113,6 +120,24 @@ fun HomePage(navigationController: NavController) {
             }
 
             is FeatureFlippingState.SUCCESS -> {
+                if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.IDEABOX)) {
+                    val ideaBanner = mySuggestionsViewModel.activeBanner.value
+                    if (ideaBanner != null) {
+                        item {
+                            IdeaStatusBanner(
+                                message = ideaBanner.message,
+                                onClick = {
+                                    val encodedIdeaId = Uri.encode(ideaBanner.targetIdeaId)
+                                    navigationController.navigate(
+                                        "${Screens.MySuggestions.name}?subpage=mySuggestions&ideaId=$encodedIdeaId"
+                                    )
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(25.dp))
+                        }
+                    }
+                }
+
                 // If the newsletters are enabled, they are loaded, and there is at least one newsletter
                 if (ffViewModel.isFeatureEnabled(FeatureFlippingEnum.NEWSLETTERS)
                     && !newsletterViewModel.isLoading.value
