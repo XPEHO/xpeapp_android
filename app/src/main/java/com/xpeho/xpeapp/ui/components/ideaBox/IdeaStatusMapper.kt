@@ -3,6 +3,8 @@ package com.xpeho.xpeapp.ui.components.ideaBox
 import androidx.compose.ui.graphics.Color
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 
+private val PENDING_STATUS_COLOR = Color(0xFFFFA500)
+
 data class IdeaStatusUi(
     val label: String,
     val backgroundColor: Color,
@@ -28,7 +30,7 @@ object IdeaStatusMapper {
 
             "PENDING", "IN_PROGRESS", "OPEN" -> IdeaStatusUi(
                 label = "EN ATTENTE",
-                backgroundColor = Color(0xFFFFA500),
+                backgroundColor = PENDING_STATUS_COLOR,
             )
 
             else -> IdeaStatusUi(
