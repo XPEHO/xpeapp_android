@@ -2,6 +2,7 @@ package com.xpeho.xpeapp.ui.components.ideaBox
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,7 +50,7 @@ fun SuggestionDetailDialog(
                     text = "idée soumise : ${suggestion.description.ifBlank { "-" }}",
                     fontSize = 16.sp,
                     fontFamily = XpehoFonts.raleway,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Normal,
                     color = Color.Black,
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -57,26 +58,44 @@ fun SuggestionDetailDialog(
                     text = "Date : ${IdeaDateFormatter.format(suggestion.createdAt)}",
                     fontSize = 16.sp,
                     fontFamily = XpehoFonts.raleway,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Normal,
                     color = Color.Black,
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "État de l'idée : ${statusUi.label.lowercase()}",
-                    fontSize = 16.sp,
-                    fontFamily = XpehoFonts.raleway,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                )
-                suggestion.reason?.takeIf { it.isNotBlank() }?.let { reason ->
-                    Spacer(modifier = Modifier.height(6.dp))
+                Row {
                     Text(
-                        text = "Message: $reason",
+                        text = "État de l'idée : ",
+                        fontSize = 16.sp,
+                        fontFamily = XpehoFonts.raleway,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Black,
+                    )
+                    Text(
+                        text = statusUi.label.lowercase(),
                         fontSize = 16.sp,
                         fontFamily = XpehoFonts.raleway,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                     )
+                }
+                suggestion.reason?.takeIf { it.isNotBlank() }?.let { reason ->
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row {
+                        Text(
+                            text = "Message: ",
+                            fontSize = 16.sp,
+                            fontFamily = XpehoFonts.raleway,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                        )
+                        Text(
+                            text = reason,
+                            fontSize = 16.sp,
+                            fontFamily = XpehoFonts.raleway,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                        )
+                    }
                 }
             }
         },

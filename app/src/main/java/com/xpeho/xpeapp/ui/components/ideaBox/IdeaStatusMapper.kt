@@ -27,8 +27,8 @@ object IdeaStatusMapper {
             )
 
             "PENDING", "IN_PROGRESS", "OPEN" -> IdeaStatusUi(
-                label = "EN COURS",
-                backgroundColor = XpehoColors.GREEN_DARK_COLOR,
+                label = "EN ATTENTE",
+                backgroundColor = Color(0xFFFFA500),
             )
 
             else -> IdeaStatusUi(
