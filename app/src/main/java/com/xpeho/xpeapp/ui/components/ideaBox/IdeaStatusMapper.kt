@@ -3,7 +3,8 @@ package com.xpeho.xpeapp.ui.components.ideaBox
 import androidx.compose.ui.graphics.Color
 import com.xpeho.xpeho_ui_android.foundations.Colors as XpehoColors
 
-private val PENDING_STATUS_COLOR = Color(0xFFFFA500)
+private const val PENDING_STATUS_COLOR_HEX = 0xFFFFA500
+private val PENDING_STATUS_COLOR = Color(PENDING_STATUS_COLOR_HEX)
 
 data class IdeaStatusUi(
     val label: String,
