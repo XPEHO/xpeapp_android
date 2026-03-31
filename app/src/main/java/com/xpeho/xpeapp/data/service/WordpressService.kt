@@ -2,6 +2,7 @@ package com.xpeho.xpeapp.data.service
 
 import com.xpeho.xpeapp.data.entity.AuthentificationBody
 import com.xpeho.xpeapp.data.entity.QvstAnswerBody
+import com.xpeho.xpeapp.data.model.ideaBox.IdeaStatus
 import com.xpeho.xpeapp.data.model.ideaBox.IdeaSubmission
 import com.xpeho.xpeapp.data.entity.user.UserEditPassword
 import com.xpeho.xpeapp.data.model.user.UserInfos
@@ -125,4 +126,8 @@ interface WordpressService {
     suspend fun submitIdea(
         @Body userIdeaSubmission: IdeaSubmission
     ): Response<Unit>
+
+    @Headers("Content-Type: application/json")
+    @GET("xpeho/v1/ideas/my")
+    suspend fun fetchMyIdeas(): Response<List<IdeaStatus>>
 }

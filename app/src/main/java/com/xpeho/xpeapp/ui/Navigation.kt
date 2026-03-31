@@ -1,7 +1,9 @@
 package com.xpeho.xpeapp.ui
 
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.NavHostController
+import androidx.navigation.navArgument
 import androidx.navigation.compose.composable
 import com.xpeho.xpeapp.XpeApp
 import com.xpeho.xpeapp.data.FeatureFlippingEnum
@@ -13,7 +15,8 @@ import com.xpeho.xpeapp.ui.page.HomePage
 import com.xpeho.xpeapp.ui.page.LoginPage
 import com.xpeho.xpeapp.ui.page.NewsletterPage
 import com.xpeho.xpeapp.ui.page.AgendaPage
-import com.xpeho.xpeapp.ui.page.IdeaBoxPage
+import com.xpeho.xpeapp.ui.page.ideaBox.IdeaBoxPage
+import com.xpeho.xpeapp.ui.page.ideaBox.MySuggestionsPage
 import com.xpeho.xpeapp.ui.page.qvst.QvstCampaignDetailPage
 import com.xpeho.xpeapp.ui.page.qvst.QvstPage
 import com.xpeho.xpeapp.ui.page.user.ProfilePage
@@ -97,6 +100,31 @@ fun NavGraphBuilder.navigationBuilder(
         Layout(navigationController) {
             if (ffManager.isFeatureEnabled(FeatureFlippingEnum.IDEABOX)) {
                 IdeaBoxPage()
+            } else {
+                DisabledFeaturePlaceHolder()
+            }
+        }
+    }
+
+    composable(
+        route = "${Screens.MySuggestions.name}?subpage={subpage}&ideaId={ideaId}",
+        arguments = listOf(
+            navArgument("subpage") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = ""
+            },
+            navArgument("ideaId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = ""
+            }
+        )
+    ) {
+        Layout(navigationController) {
+            if (ffManager.isFeatureEnabled(FeatureFlippingEnum.IDEABOX)) {
+                val targetIdeaId = it.arguments?.getString("ideaId")
+                MySuggestionsPage(targetIdeaId = targetIdeaId?.takeIf { ideaId -> ideaId.isNotBlank() })
             } else {
                 DisabledFeaturePlaceHolder()
             }

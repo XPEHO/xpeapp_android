@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.xpeho.xpeapp.di.TokenProvider
 import com.xpeho.xpeapp.domain.AuthData
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +27,10 @@ class DatastorePref(
         val AUTH_DATA = stringPreferencesKey("authData")
         val WAS_CONNECTED_LAST_TIME = stringPreferencesKey("wasConnectedLastTime")
         val LAST_EMAIL = stringPreferencesKey("lastEmail")
+        val IDEA_STATUSES_SNAPSHOT = stringPreferencesKey("ideaStatusesSnapshot")
+        val IDEA_BANNER_MESSAGE = stringPreferencesKey("ideaBannerMessage")
+        val IDEA_BANNER_TARGET_ID = stringPreferencesKey("ideaBannerTargetId")
+        val IDEA_BANNER_EXPIRATION_MILLIS = longPreferencesKey("ideaBannerExpirationMillis")
     }
 
     val isConnectedLeastOneTime: Flow<Boolean> = context.dataStore.data
@@ -100,5 +106,73 @@ class DatastorePref(
             preferences[LAST_EMAIL]
         }.first()
     }
+
+    // Idea statuses snapshot
+
+    suspend fun setIdeaStatusesSnapshot(statusesById: Map<String, String>) {
+        val json = Gson().toJson(statusesById)
+        context.dataStore.edit { preference ->
+            preference[IDEA_STATUSES_SNAPSHOT] = json
+        }
+    }
+
+    suspend fun getIdeaStatusesSnapshot(): Map<String, String> {
+        val json = context.dataStore.data.map { preferences ->
+            preferences[IDEA_STATUSES_SNAPSHOT]
+        }.first() ?: return emptyMap()
+
+        val mapType = object : TypeToken<Map<String, String>>() {}.type
+        return Gson().fromJson(json, mapType) ?: emptyMap()
+    }
+
+    // Idea status banner
+
+    suspend fun setIdeaStatusBanner(
+        message: String,
+        targetIdeaId: String,
+        expirationMillis: Long,
+    ) {
+        context.dataStore.edit { preference ->
+            preference[IDEA_BANNER_MESSAGE] = message
+            preference[IDEA_BANNER_TARGET_ID] = targetIdeaId
+            preference[IDEA_BANNER_EXPIRATION_MILLIS] = expirationMillis
+        }
+    }
+
+    suspend fun getIdeaStatusBanner(): IdeaStatusBanner? {
+        val preferences = context.dataStore.data.first()
+        val message = preferences[IDEA_BANNER_MESSAGE]
+        val targetId = preferences[IDEA_BANNER_TARGET_ID]
+        val expiration = preferences[IDEA_BANNER_EXPIRATION_MILLIS]
+
+        if (message.isNullOrBlank() || targetId.isNullOrBlank() || expiration == null) {
+            return null
+        }
+
+        if (System.currentTimeMillis() > expiration) {
+            clearIdeaStatusBanner()
+            return null
+        }
+
+        return IdeaStatusBanner(
+            message = message,
+            targetIdeaId = targetId,
+            expirationMillis = expiration,
+        )
+    }
+
+    suspend fun clearIdeaStatusBanner() {
+        context.dataStore.edit { preference ->
+            preference.remove(IDEA_BANNER_MESSAGE)
+            preference.remove(IDEA_BANNER_TARGET_ID)
+            preference.remove(IDEA_BANNER_EXPIRATION_MILLIS)
+        }
+    }
 }
+
+data class IdeaStatusBanner(
+    val message: String,
+    val targetIdeaId: String,
+    val expirationMillis: Long,
+)
 

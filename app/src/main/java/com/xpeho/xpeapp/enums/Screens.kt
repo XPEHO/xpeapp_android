@@ -10,5 +10,6 @@ enum class Screens {
     Profile,
     Agenda,
     Agency,
-    IdeaBox
+    IdeaBox,
+    MySuggestions
 }
