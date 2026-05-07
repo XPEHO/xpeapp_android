@@ -36,7 +36,8 @@
             android:exported="true"
             android:theme="@style/Theme.XpeAppSplashScreen"
             android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
